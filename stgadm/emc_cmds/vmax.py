@@ -59,42 +59,10 @@ class VMAX(object):
             ign_out = filter(None, ign_out)[-1].lstrip()
             return ign_out
 
-    def init_ign_test(self):
-        """
-        :return: The initiator Group Name of the client server. Just for tests
-        using a file on data_tests/ign-wwn.txt
-        """
-
-        self.validate_args()
-
-        if os.path.isfile('{0}/ign-{1}.txt'.format(self.symcli_path, self.wwn)):
-
-            ign_cmd = "cat {0}/ign-{1}.txt".format(
-                self.symcli_path, self.wwn)
-
-        else:
-
-            ign_cmd = "cat {0}/ign-50050763063811e1.txt".format(
-                self.symcli_path)
-
-        c_ign = subprocess.Popen(ign_cmd.split(), stdout=subprocess.PIPE,
-                                 stderr=subprocess.PIPE)
-        ign_out = c_ign.communicate()[0]
-
-        if 'The specified initiator was not found' in ign_out:
-            return ign_out
-        else:
-            # spliting in lines
-            ign_out = ign_out.split('\n')
-            # cleaning the empty elements (filter) and removing whitespaces
-            # (lstrip)
-            ign_out = filter(None, ign_out)[-1].lstrip()
-            return ign_out
-
-    def init_mvn(self, ign=''):
+     def init_mvn(self, ign=''):
         """
         Get the Mask View Names by Initiator Group Name
-        :param ign: Initiator Group Name
+        :param ign: Initiator Group Name. check init_ign()
         :return: Mask View Name
         """
 
@@ -105,27 +73,30 @@ class VMAX(object):
                                  stderr=subprocess.PIPE)
         mvn_out = c_mvn.communicate()[0]
 
-        mvn_out = mvn_out.split('Masking View Name')[1]
-        mvn_out = mvn_out.split()[1].lstrip()
-
-        return mvn_out
-
-    def init_mvn_test(self, ign=''):
-
-        """
-        Get the Mask View Names by Initiator Group Name . Just for tests using
-        a file on data_tests/mvn-INITIATOR_GROUP_NAME.txt
-        :param ign: Initiator Group Name
-        :return: Mask View Name
-        """
-
-        mvn_cmd = "cat {0}/mgv-{1}.txt".format(self.symcli_path, ign)
-
-        c_mvn = subprocess.Popen(mvn_cmd.split(), stdout=subprocess.PIPE,
-                                 stderr=subprocess.PIPE)
-        mvn_out = c_mvn.communicate()[0]
-
         mvn_out = mvn_out.split('Masking View Names')[1]
         mvn_out = mvn_out.split()[1].lstrip()
 
         return mvn_out
+
+     def init_sgn(self, mvn=''):
+         """
+         Get the Storage Group Name by the Mask View Name
+
+         :param mvn: Mask View Name check init_mvn()
+         :return: Storage Group Name
+         """
+
+         sgn_cmd = '{0}/symaccess -sid {1} show view {2}'.format(
+             self.symcli_path, self.sid, mvn)
+
+         c_sgn = subprocess.Popen(sgn_cmd.split(), stdout=subprocess.PIPE,
+                                  stderr=subprocess.PIPE)
+
+         mvn_out = c_sgn.communicate()[0]
+
+         mvn_out = mvn_out.split('Storage Group Name')
+         mvn_out = mvn_out.split()[1]
+
+         return mvn_out
+
+
