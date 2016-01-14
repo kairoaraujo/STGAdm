@@ -3,7 +3,6 @@
 #
 # 
 import subprocess
-import os
 
 
 class VMAX(object):
@@ -59,7 +58,7 @@ class VMAX(object):
             ign_out = filter(None, ign_out)[-1].lstrip()
             return ign_out
 
-     def init_mvn(self, ign=''):
+    def init_mvn(self, ign=''):
         """
         Get the Mask View Names by Initiator Group Name
         :param ign: Initiator Group Name. check init_ign()
@@ -78,25 +77,26 @@ class VMAX(object):
 
         return mvn_out
 
-     def init_sgn(self, mvn=''):
-         """
+    def init_sgn(self, mvn=''):
+        """
          Get the Storage Group Name by the Mask View Name
 
          :param mvn: Mask View Name check init_mvn()
          :return: Storage Group Name
          """
 
-         sgn_cmd = '{0}/symaccess -sid {1} show view {2}'.format(
-             self.symcli_path, self.sid, mvn)
+        sgn_cmd = '{0}/symaccess -sid {1} show view {2}'.format(
+            self.symcli_path, self.sid, mvn)
 
-         c_sgn = subprocess.Popen(sgn_cmd.split(), stdout=subprocess.PIPE,
-                                  stderr=subprocess.PIPE)
+        c_sgn = subprocess.Popen(sgn_cmd.split(), stdout=subprocess.PIPE,
+                                 stderr=subprocess.PIPE)
 
-         mvn_out = c_sgn.communicate()[0]
+        sgn_out = c_sgn.communicate()[0]
 
-         mvn_out = mvn_out.split('Storage Group Name')
-         mvn_out = mvn_out.split()[1]
+        sgn_out = sgn_out.split('Storage Group Name ')[1]
+        sgn_out = sgn_out.split()[1]
 
-         return mvn_out
+        return sgn_out
+
 
 
