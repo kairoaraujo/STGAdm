@@ -13,18 +13,16 @@ stghome = "/Users/kairoaraujo/Documents/Dev/Python/stgadm"
 #
 #       Types available:
 #       - EMC_VMAX     EMC VMAX Storages
-#       - EMC_VX       EMC VX Storages
+#       - EMC_VNX      EMC VNX Storages
 #       - IBM_DS8K     IBM DS8K Storages
 
 storages = {
-    '0002':['EMC_VMAX','002'],
-    '0168':['EMC_VMAX','168'],
-    '0314 [Cloud Computing)':['EMC_VX','314'],
-    'CD01 (IBM pSeries)':['IBM_DS8K','CD01']
+    '0002': ['EMC_VMAX', '002'],
+    '0168': ['EMC_VMAX', '168'],
+    '0314 [Cloud Computing]': ['EMC_VNX', '314'],
+    'CD01 (IBM pSeries)': ['IBM_DS8K', 'CD01']
 }
 
-
 symcli_path = "echo /opt/emc/SYMCLI/bin/"
-
 
 modeop = 'demo'

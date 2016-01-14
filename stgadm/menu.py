@@ -9,9 +9,7 @@ import config
 import emc_cmds
 
 
-
 def main_menu():
-
     os.system('clear')
     print('[ Storage Adm ]\n[ Version {0} - © 2015 ]\n\n'.format(
         globalvar.version))
@@ -31,33 +29,33 @@ def main_menu():
         if ':' in wwn_client:
             wwn_client = wwn_client.replace(':', '')
 
-
         get_stg = systemstorages.SystemStorages()
-        get_stg.selectStorage()
+        get_stg.selectstorage()
 
         print('\nConfig validation:\n')
         print('Registar      : {0}'.format(change))
         print('Client Server : {0}'.format(hostname_client))
+        print('Storage Name  : {0}'.format(storage_name))
         print('WWN Client    : {0}'.format(wwn_client))
-        print('Storage Name  : {0}'.format(get_stg.getStorage()))
-        print('Storage Type  : {0}'.format(get_stg.getType()))
-        print('Storage SID   : {0}'.format(get_stg.getSID()))
+        print('Storage Name  : {0}'.format(get_stg.getstorage()))
+        print('Storage Type  : {0}'.format(get_stg.gettype()))
+        print('Storage SID   : {0}'.format(get_stg.getsid()))
 
         print('\nChecking the configurations of server...')
 
-        chk_server = emc_cmds.VMAX(config.symcli_path, get_stg.getSID(),
+        chk_server = emc_cmds.VMAX(config.symcli_path, get_stg.getsid(),
                                    wwn_client)
 
         if config.modeop == 'demo':
-            ## test using data_tests
-            chk_server = emc_cmds.VMAX(config.stghome+'/stgadm/data_tests/',
-                                   get_stg.getSID(), wwn_client)
+            # test using data_tests
+            chk_server = emc_cmds.VMAX(config.stghome + '/stgadm/data_tests/',
+                                       get_stg.getsid(), wwn_client)
 
             ign = chk_server.init_ign_test()
 
         else:
 
-            ign =  chk_server.init_ign()
+            ign = chk_server.init_ign()
 
         if 'The specified initiator was not found' in ign:
             print('Sorry, {0}'.format(ign))
@@ -68,21 +66,3 @@ def main_menu():
         mgv = chk_server.init_mvn_test(ign)
 
         print('Getting the Making View Names: {0}'.format(mgv))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
