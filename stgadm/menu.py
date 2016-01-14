@@ -65,7 +65,7 @@ def main_menu():
 
         print ('Getting the Initiator Group Name: {0}'.format(ign))
 
-        mgv = chk_server.init_mgv_test(ign)
+        mgv = chk_server.init_mvn_test(ign)
 
         print('Getting the Making View Names: {0}'.format(mgv))
 
