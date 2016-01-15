@@ -4,7 +4,7 @@
 #
 
 # STGAdm installation directory
-stghome = "/Users/kairoaraujo/Documents/Dev/Python/stgadm"
+stghome = "/opt/Atividades/kairo/STGAdm-master"
 
 # Storage List
 # Important:
@@ -23,6 +23,5 @@ storages = {
     'CD01 (IBM pSeries)': ['IBM_DS8K', 'CD01']
 }
 
-symcli_path = "echo /opt/emc/SYMCLI/bin/"
+symcli_path = "/opt/emc/SYMCLI/bin/"
 
-modeop = 'demo'

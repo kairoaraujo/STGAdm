@@ -30,11 +30,31 @@ class VMAX(object):
     def validate_args(self):
         """ Validate if the required args is declarated. """
 
-        if self.symcli_path == '' or self.sid == '' or self.wwn == '':
+        if self.symcli_path == '' or self.sid == '':
             msg = 'This function require all attributes.'
             return msg
 
-    def init_ign(self):
+    def lspools(self, args=''):
+        """ List of pools """
+
+        self.validate_args()
+
+        lspools_cmd = '{0}/symcfg -sid {1} list -pool {2}'.format(
+            self.symcli_path, self.sid, args)
+
+        c_lspools = subprocess.Popen(lspools_cmd.split(),
+                                     stdout=subprocess.PIPE,
+                                     stderr=subprocess.PIPE)
+
+        lspool_out, lspool_err = c_lspools.communicate()
+
+        if c_lspools.returncode == 0:
+            lspool_out = lspool_out.split('Legend:')
+            return c_lspools.returncode, lspool_out
+        else:
+            return c_lspools.returncode, lspool_err
+
+    def get_ign(self, wwn=''):
         """
         :return: The Initiator Group Name of the client server (WWN).
         """
@@ -42,23 +62,25 @@ class VMAX(object):
         self.validate_args()
 
         ign_cmd = "{0}/symaccess -sid {1} -type init list -wwn {2}".format(
-            self.symcli_path, self.sid, self.wwn)
+            self.symcli_path, self.sid, wwn)
 
         c_ign = subprocess.Popen(ign_cmd.split(), stdout=subprocess.PIPE,
                                  stderr=subprocess.PIPE)
-        ign_out = c_ign.communicate()[0]
 
-        if 'The specified initiator was not found' in ign_out:
-            return ign_out
-        else:
+        ign_out, ign_err = c_ign.communicate()
+
+        if c_ign.returncode == 0:
             # spliting in lines
             ign_out = ign_out.split('\n')
             # cleaning the empty elements (filter) and removing whitespaces
             # (lstrip)
             ign_out = filter(None, ign_out)[-1].lstrip()
-            return ign_out
+            return c_ign.returncode, ign_out
 
-    def init_mvn(self, ign=''):
+        else:
+            return c_ign.returncode, ign_err
+
+    def get_mvn(self, ign=''):
         """
         Get the Mask View Names by Initiator Group Name
         :param ign: Initiator Group Name. check init_ign()
@@ -70,14 +92,18 @@ class VMAX(object):
 
         c_mvn = subprocess.Popen(mvn_cmd.split(), stdout=subprocess.PIPE,
                                  stderr=subprocess.PIPE)
-        mvn_out = c_mvn.communicate()[0]
+        mvn_out, mvn_err = c_mvn.communicate()
 
-        mvn_out = mvn_out.split('Masking View Names')[1]
-        mvn_out = mvn_out.split()[1].lstrip()
+        if c_mvn.returncode == 0:
+            mvn_out = mvn_out.split('Masking View Names')[1]
+            mvn_out = mvn_out.split()[1].lstrip()
 
-        return mvn_out
+            return c_mvn.returncode, mvn_out
 
-    def init_sgn(self, mvn=''):
+        else:
+            return c_mvn.returncode, mvn_err
+
+    def get_sgn(self, mvn=''):
         """
          Get the Storage Group Name by the Mask View Name
 
@@ -91,12 +117,12 @@ class VMAX(object):
         c_sgn = subprocess.Popen(sgn_cmd.split(), stdout=subprocess.PIPE,
                                  stderr=subprocess.PIPE)
 
-        sgn_out = c_sgn.communicate()[0]
+        sgn_out, sgn_err = c_sgn.communicate()
 
-        sgn_out = sgn_out.split('Storage Group Name ')[1]
-        sgn_out = sgn_out.split()[1]
+        if c_sgn.returncode == 0:
+            sgn_out = sgn_out.split('Storage Group Name ')[1]
+            sgn_out = sgn_out.split()[1]
 
-        return sgn_out
-
-
-
+            return c_sgn.returncode, sgn_out
+        else:
+            return c_sgn.returncode, sgn_err
