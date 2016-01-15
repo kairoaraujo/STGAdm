@@ -74,7 +74,7 @@ def main_menu():
 
         print('\nCollecting some storage informations. Please wait...')
 
-        ign = chk_server.get_ign()
+        ign = chk_server.get_ign(wwn_client)
 
         if ign[0] != 0:
             print('ERROR: {0}'.format(ign[1].replace('\n', '')))
