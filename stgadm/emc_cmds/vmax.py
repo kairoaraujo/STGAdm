@@ -50,6 +50,7 @@ class VMAX(object):
 
         if c_lspools.returncode == 0:
             lspool_out = lspool_out.split('Legend:')
+            lspool_out = lspool_out[1] # first part only
             return c_lspools.returncode, lspool_out
         else:
             return c_lspools.returncode, lspool_err
