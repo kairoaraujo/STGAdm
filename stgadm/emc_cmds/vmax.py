@@ -50,7 +50,7 @@ class VMAX(object):
 
         if c_lspools.returncode == 0:
             lspool_out = lspool_out.split('Legend:')
-            lspool_out = lspool_out[1] # first part only
+            lspool_out = lspool_out[1]  # first part only
             return c_lspools.returncode, lspool_out
         else:
             return c_lspools.returncode, lspool_err
@@ -87,6 +87,7 @@ class VMAX(object):
         :param ign: Initiator Group Name. check init_ign()
         :return: Mask View Name
         """
+        self.validate_args()
 
         mvn_cmd = "{0}/symaccess -sid {1} -type init show {2}".format(
             self.symcli_path, self.sid, ign)
@@ -111,6 +112,7 @@ class VMAX(object):
          :param mvn: Mask View Name check init_mvn()
          :return: Storage Group Name
          """
+        self.validate_args()
 
         sgn_cmd = '{0}/symaccess -sid {1} show view {2}'.format(
             self.symcli_path, self.sid, mvn)
@@ -127,3 +129,59 @@ class VMAX(object):
             return c_sgn.returncode, sgn_out
         else:
             return c_sgn.returncode, sgn_err
+
+    def create_dev(self,
+                   count='0',
+                   lun_size='0',
+                   member_size='0',
+                   dev_type='',
+                   pool='',
+                   sg=''):
+
+        # convert size GB to CYL
+        lun_size /= 1092
+        member_size /= 1092
+
+        self.validate_args()
+
+        if dev_type == 'meta':
+            create_dev_cmd = 'echo {0}/symconfigure -sid {1} -cmd \" ' \
+                             'create dev count= {1}, size= {3} CYL, ' \
+                             'emulation=FBA , config=TDEV , ' \
+                             'meta_member_size= {4} CYL, ' \
+                             'meta_config=striped, binding to pool= {5}, ' \
+                             'sg={6} ;\" commit -v -nop' \
+                .format(self.symcli_path,
+                        self.sid,
+                        count,
+                        lun_size,
+                        member_size,
+                        pool,
+                        sg)
+
+        elif dev_type == 'regular':
+
+            create_dev_cmd = 'echo {0}/symconfigure -sid {1} -cmd \" ' \
+                             'create dev count= {2}, size= {3} CYL, ' \
+                             'emulation=FBA , config=TDEV , ' \
+                             'binding to pool= {4}, sg={5} ;\"commit -v -nop' \
+                .format(self.symcli_path,
+                        self.sid,
+                        count,
+                        lun_size,
+                        pool,
+                        sg)
+
+        else:
+            return 'argument dev_type is not valid. use: meta or regular'
+
+        c_create_dev = subprocess.Popen(create_dev_cmd.split(),
+                                        stdout=subprocess.PIPE,
+                                        stderr=subprocess.PIPE)
+
+        create_dev_out, create_dev_err = c_create_dev.communicate()
+
+        if c_create_dev.returncode == 0:
+            return c_create_dev.returncode, create_dev_out
+        else:
+            return c_create_dev.returncode, create_dev_err
