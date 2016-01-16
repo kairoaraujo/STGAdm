@@ -5,11 +5,10 @@
 import config
 import globalvar
 import emc_cmds
-import shutil
+import os
 
 
 class New:
-
     def __init__(self, change=None, hostname_client=None, storage_name=None,
                  wwn_client=None, stg_name=None, stg_type=None, stg_sid=None,
                  ign=None, mvn=None, sgn=None, stg_pool=None, disk_volume=None,
@@ -31,6 +30,7 @@ class New:
         self.lun_type = lun_type
         self.member_meta_size = member_meta_size
         self.disk_count = disk_count
+        self.time = globalvar.timestr.replace('-','_')
 
     def preview(self):
         print('\nConfig validation\n')
@@ -84,10 +84,10 @@ class New:
         file_change.write(
             '#!/usr/bin/env python\n'
             '# -*- coding: utf-8 -*-\n'
-            '#'
-            '# Time: {0}'
             '#\n'
-            '\n'.format(globalvar.timestr)
+            '# Time: {0}\n'
+            '#\n'
+            '\n'.format(self.time)
         )
 
     def writechange(self):
@@ -104,26 +104,26 @@ class New:
             "import vmax_add_dev\n"
             "\n"
             "# variables\n"
-            "change = {0}\n"
-            "hostname_client = {1}\n"
-            "storage_name = {2}\n"
-            "wwn_client = {3}\n"
-            "stg_name = {4}\n"
-            "stg_type = {5}\n"
-            "stg_sid = {6}\n"
-            "ign = {7}\n"
-            "mvn = {8}\n"
-            "sgn = {9}\n"
-            "stg_pool = {10}\n"
-            "disk_volume = {11}\n"
-            "lun_size = {12}\n"
-            "lun_type = {13}\n"
-            "member_meta_size = {14}\n"
-            "disk_count = {15}\n"
-            "timestr = {16}\n"
+            "change = '{0}'\n"
+            "hostname_client = '{1}'\n"
+            "storage_name = '{2}'\n"
+            "wwn_client = '{3}'\n"
+            "stg_name = '{4}'\n"
+            "stg_type = '{5}'\n"
+            "stg_sid = '{6}'\n"
+            "ign = '{7}'\n"
+            "mvn = '{8}'\n"
+            "sgn = '{9}'\n"
+            "stg_pool = '{10}'\n"
+            "disk_volume = '{11}'\n"
+            "lun_size = '{12}'\n"
+            "lun_type = '{13}'\n"
+            "member_meta_size = '{14}'\n"
+            "disk_count = '{15}'\n"
+            "time = '{16}'\n"
             "\n"
-            "\n "
-            "{0}_{7}_{16} = vmax_add_dev("
+            "\n"
+            "{0}_{7}_{16} = vmax_add_dev.New(\n"
             "                       change, hostname_client, storage_name,\n"
             "                       wwn_client, stg_name, stg_type, stg_sid,\n"
             "                       ign, mvn, sgn, stg_pool, disk_volume,\n"
@@ -131,33 +131,33 @@ class New:
             "                       disk_count\n"
             "\n"
             "def preview(self):\n"
-            "\n\t"
-            "\t{0}_{7}_{16}.preview()"
-            "\n\t"
-            "\n"
+            "    \n"
+            "    {0}_{7}_{16}.preview()\n"
+            "    \n"
+            "    \n"
             "def preview(self):\n"
-            "\n\t"
-            "\n"
-            "\tevidence = {0}_{7}_{16}.execute()\n"
-            "\tprint evidence"
-            "\n"
-            "\n".format(
-                self.change,
-                self.hostname_client,
-                self.storage_name,
-                self.wwn_client,
-                self.stg_name,
-                self.stg_type,
-                self.stg_sid,
-                self.ign,
-                self.mvn,
-                self.sgn,
-                self.stg_pool,
-                self.disk_volume,
-                self.lun_size,
-                self.lun_type,
-                self.member_meta_size,
-                globalvar.timestr
+            "    \n"
+            "    \n"
+            "    evidence = {0}_{7}_{16}.execute()\n"
+            "    print evidence"
+            "    \n".format(
+                self.change,  # 0
+                self.hostname_client,  # 1
+                self.storage_name,  # 2
+                self.wwn_client,  # 3
+                self.stg_name,  # 4
+                self.stg_type,  # 5
+                self.stg_sid,  # 6
+                self.ign,  # 7
+                self.mvn,  # 8
+                self.sgn,  # 9
+                self.stg_pool,  # 10
+                self.disk_volume,  # 11
+                self.lun_size,  # 12
+                self.lun_type,  # 13
+                self.member_meta_size,  # 14
+                self.disk_count,  # 15
+                self.time  # 16
             )
         )
 
@@ -166,11 +166,13 @@ class New:
 
         file_change.write('\n\n# File closed with success by STGAdm.\n')
         file_change.close()
-        shutil.move('{0}/stgadm/tmp/{1}_{2}_{3}.py',
-                    '{0}/stgadm/changes/{1}_{2}_{3}.py'.format(
-                        config.stghome, self.change, self.ign,
-                        globalvar.timestr))
+        orig_change = '{0}/stgadm/tmp/{1}_{2}_{3}.py'.format(
+                        config.stghome, self.change, self.ign, self.time)
+        dest_change = '{0}/stgadm/tmp/{1}_{2}_{3}.py'.format(
+                        config.stghome, self.change, self.ign, self.time)
 
-        return ('{0}/stgadm/changes/{1}_{2}_{3}.py'.format(
-            config.stghome, self.change, self.ign,
-            globalvar.timestr))
+        os.rename(orig_change,dest_change)
+
+        if os.path.isfile(dest_change):
+            return 'The change {0} was successfully save.'
+

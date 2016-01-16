@@ -231,7 +231,7 @@ def menu_emc_vmax(change=None, hostname_client=None, storage_name=None,
     print('Device type   : {0}GB'.format(lun_type))
     if lun_type == 'meta':
         print('Member Size   : {0}GB (meta)'.format(member_meta_size))
-    print('DiskCount         : {0}'.format(disk_count))
+    print('DiskCount     : {0}'.format(disk_count))
     print(50 * '-')
     print('\n')
 

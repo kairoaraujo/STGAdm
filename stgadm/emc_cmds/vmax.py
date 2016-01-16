@@ -48,7 +48,7 @@ class VMAX(object):
 
         if c_lspools.returncode == 0:
             lspool_out = lspool_out.split('Legend:')
-            lspool_out = lspool_out[1]  # first part only
+            lspool_out = lspool_out[0]  # first part only
             return c_lspools.returncode, lspool_out
         else:
             return c_lspools.returncode, lspool_err
@@ -73,7 +73,7 @@ class VMAX(object):
             ign_out = ign_out.split('\n')
             # cleaning the empty elements (filter) and removing whitespaces
             # (lstrip)
-            ign_out = filter(None, ign_out)[-1].lstrip()
+            ign_out = filter(None, ign_out)[-1].strip()
             return c_ign.returncode, ign_out
 
         else:
