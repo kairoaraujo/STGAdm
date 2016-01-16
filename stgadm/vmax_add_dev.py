@@ -14,6 +14,7 @@ class New:
                  ign=None, mvn=None, sgn=None, stg_pool=None, disk_volume=None,
                  lun_size=None, lun_type=None, member_meta_size=None,
                  disk_count=None):
+
         self.change = change
         self.hostname_client = hostname_client
         self.storage_name = storage_name
@@ -30,7 +31,7 @@ class New:
         self.lun_type = lun_type
         self.member_meta_size = member_meta_size
         self.disk_count = disk_count
-        self.time = globalvar.timestr.replace('-','_')
+        self.time = globalvar.timestr.replace('-', '_')
 
     def preview(self):
         print('\nConfig validation\n')
@@ -101,6 +102,9 @@ class New:
             "\n"
             "#import \n"
             "\n"
+            "import sys\n"
+            "import vmax_add_dev\n"
+            "sys.path.append('..)\n"
             "import vmax_add_dev\n"
             "\n"
             "# variables\n"
@@ -157,21 +161,21 @@ class New:
                 self.lun_type,  # 13
                 self.member_meta_size,  # 14
                 self.disk_count,  # 15
-                self.time  # 16
-            )
-        )
+                self.time))  # 16)
 
     def closechange(self):
         """ Close the file and move to correct directory """
 
         file_change.write('\n\n# File closed with success by STGAdm.\n')
         file_change.close()
-        orig_change = '{0}/stgadm/tmp/{1}_{2}_{3}.py'.format(
-                        config.stghome, self.change, self.ign, self.time)
-        dest_change = '{0}/stgadm/tmp/{1}_{2}_{3}.py'.format(
-                        config.stghome, self.change, self.ign, self.time)
 
-        os.rename(orig_change,dest_change)
+        orig_change = '{0}/stgadm/tmp/{1}_{2}_{3}.py'.format(
+            config.stghome, self.change, self.ign, self.time)
+
+        dest_change = '{0}/stgadm/tmp/{1}_{2}_{3}.py'.format(
+            config.stghome, self.change, self.ign, self.time)
+
+        os.rename(orig_change, dest_change)
 
         if os.path.isfile(dest_change):
             return 'The change {0} was successfully save.'
