@@ -73,8 +73,8 @@ def main_menu():
         if stg_type == 'EMC_VMAX':
             stg_sid = get_stg.getsid()
             stg_name = get_stg.getstorage()
-            menu_emc_vmax(stg_name, stg_type, stg_sid, wwn_client,
-                          hostname_client, storage_name)
+            menu_emc_vmax(change, hostname_client, storage_name, stg_name,
+                          stg_type, stg_sid, wwn_client)
 
         elif stg_type == 'EMC_VNX':
             pass
@@ -84,10 +84,10 @@ def main_menu():
                 stg_type))
 
 
-def menu_emc_vmax(stg_name, stg_type, stg_sid, wwn_client, change=None,
-                  hostname_client=None, storage_name=None):
-    # get storage informations
+def menu_emc_vmax(change=None, hostname_client=None, storage_name=None,
+                  stg_name=None, stg_type=None, stg_sid=None, wwn_client=None):
 
+    # get storage informations
     global pool_option
 
     chk_server = emc_cmds.VMAX(config.symcli_path, stg_sid,
@@ -159,6 +159,53 @@ def menu_emc_vmax(stg_name, stg_type, stg_sid, wwn_client, change=None,
                 '\tERROR: Select an existing option between'
                 '0 and {0}.'.format(count))
 
+    def choose_device_type():
+        print('Select the type of device you want create:\n')
+        print('0. Meta device')
+        print('1. Regular device')
+        device_type = raw_input('\nChoose an option: ')
+
+        if device_type == '0':
+
+            device_type = 'meta'
+
+            while True:
+                try:
+                    size_check = 1
+
+                    while size_check != 0:
+                        member_size = int(raw_input(
+                            'What is the size of member? (GB): '))
+                        size_check = lun_size % member_size
+                        if size_check != 0:
+                            print('ERRO: The member size ({0} GB) needs to '
+                                  'be an integer divisor by the '
+                                  'LUN Size ({1}GB).'
+                                  .format(member_size, lun_size))
+
+                        else:
+                            return member_size, device_type
+
+                    break
+                except (TypeError, ValueError):
+                    print(
+                        '\tERROR: Total Disk need to be an int value in GB.'
+                        '\nDo not use GB. Example: 1000 for 1000GB (1TB)')
+
+        elif device_type == '1':
+
+            device_type = 'regular'
+            member_size = None
+            return member_size, device_type
+
+        else:
+            print('ERRO: Wrong option.')
+            choose_device_type()
+
+    device_config = choose_device_type()
+    lun_type = device_config[0]
+    member_meta_size = device_config[1]
+
     print('\nConfig validation\n')
     print('\nClient Information')
     print(50 * '-')
@@ -177,43 +224,15 @@ def menu_emc_vmax(stg_name, stg_type, stg_sid, wwn_client, change=None,
     print('Storage Pool          : {0}'.format(pool_list[pool_option]))
     print('\nInformations about the request:')
     print(50 * '-')
-    print('Disk Volume   : {0}'.format(disk_volume))
-    print('LUN Size      : {0}'.format(lun_size))
-    print('')
+    print('Disk Volume   : {0}GB'.format(disk_volume))
+    print('LUN Size      : {0}GB'.format(lun_size))
+    print('Device type   : {0}GB'.format(lun_type))
+    if lun_type == 'meta':
+        print('Member Size   : {0}GB (meta)'.format(member_meta_size))
 
-    def choose_device_type():
-        print('Select the type of device you want create:\n')
-        print('0. Meta device')
-        print('1. Regular device')
-        device_type = raw_input('\nChoose an option: ')
+    save_config = fields.YesNo('Do you would like save this allocation?: ',
+                               'n')
+    save_config = save_config.check()
 
-        if device_type == '0':
-
-            while True:
-                try:
-                    size_check = 1
-
-                    while size_check != 0:
-                        member_size = int(raw_input(
-                            'What is the size of member? (GB): '))
-                        size_check = lun_size % member_size
-                        if size_check != 0:
-                            print('ERRO: The member size ({0} GB) needs to '
-                                  'be an integer divisor by the '
-                                  'LUN Size ({1}GB).'
-                                  .format(member_size, lun_size))
-
-                    break
-                except (TypeError, ValueError):
-                    print(
-                        '\tERROR: Total Disk need to be an int value in GB.'
-                        '\nDo not use GB. Example: 1000 for 1000GB (1TB)')
-
-        elif device_type == '1':
-            pass
-
-        else:
-            print('ERRO: Wrong option.')
-            choose_device_type()
-
-    choose_device_type()
+    if save_config == 'y':
+        pass
