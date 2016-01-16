@@ -8,6 +8,7 @@ import systemstorages
 import config
 import fields
 import emc_cmds
+import vmax_add_dev
 
 
 def main_menu():
@@ -90,8 +91,7 @@ def menu_emc_vmax(change=None, hostname_client=None, storage_name=None,
     # get storage informations
     global pool_option
 
-    chk_server = emc_cmds.VMAX(config.symcli_path, stg_sid,
-                               wwn_client)
+    chk_server = emc_cmds.VMAX(config.symcli_path, stg_sid)
 
     print('\nCollecting some storage informations. Please wait...')
 
@@ -206,6 +206,8 @@ def menu_emc_vmax(change=None, hostname_client=None, storage_name=None,
     lun_type = device_config[0]
     member_meta_size = device_config[1]
 
+    disk_count = disk_volume / lun_size
+
     print('\nConfig validation\n')
     print('\nClient Information')
     print(50 * '-')
@@ -229,10 +231,26 @@ def menu_emc_vmax(change=None, hostname_client=None, storage_name=None,
     print('Device type   : {0}GB'.format(lun_type))
     if lun_type == 'meta':
         print('Member Size   : {0}GB (meta)'.format(member_meta_size))
+    print('DiskCount         : {0}'.format(disk_count))
+    print(50 * '-')
+    print('\n')
 
     save_config = fields.YesNo('Do you would like save this allocation?: ',
                                'n')
     save_config = save_config.check()
 
     if save_config == 'y':
-        pass
+
+        new_change = vmax_add_dev.New(change, hostname_client, storage_name,
+                                      wwn_client, stg_name, stg_type, stg_sid,
+                                      ign, mvn, sgn, pool_list[pool_option],
+                                      disk_volume, lun_size, lun_type,
+                                      member_meta_size, disk_count)
+        new_change.preview()
+        new_change.headerchange()
+        new_change.writechange()
+        end_change = new_change.closechange()
+        print end_change
+
+    else:
+        print('Finishing. Thank you.')

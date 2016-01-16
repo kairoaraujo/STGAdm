@@ -8,16 +8,14 @@ import subprocess
 class VMAX(object):
     """ Class VMAX works with EMC VMAX Storage """
 
-    def __init__(self, symcli_path='', sid='', wwn=''):
+    def __init__(self, symcli_path='', sid=''):
         """
         :param symcli_path: Path installation of SYMCLI
         :param sid: Storage SID
-        :param wwn: WWN of the client server
         """
 
         self.symcli_path = symcli_path
         self.sid = sid
-        self.wwn = wwn
 
     def __repr__(self):
         """
@@ -131,7 +129,7 @@ class VMAX(object):
             return c_sgn.returncode, sgn_err
 
     def create_dev(self, count='0', lun_size='0', member_size='0', dev_type='',
-                   pool='', sg=''):
+                   pool='', sgn=''):
 
         # convert size GB to CYL
         lun_size /= 1092
@@ -152,7 +150,7 @@ class VMAX(object):
                         lun_size,
                         member_size,
                         pool,
-                        sg)
+                        sgn)
 
         elif dev_type == 'regular':
 
@@ -165,7 +163,7 @@ class VMAX(object):
                         count,
                         lun_size,
                         pool,
-                        sg)
+                        sgn)
 
         else:
             return 'argument dev_type is not valid. use: meta or regular'
