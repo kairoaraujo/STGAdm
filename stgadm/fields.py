@@ -35,3 +35,39 @@ class Fields:
         """ Returns the answer to question field. """
 
         return self.variable
+
+
+class YesNo:
+    """ A simple class to do questions and check the answer is y/n (yes or no).
+
+        Args:
+          question(str): The question do want to do like 'It is correct?'.
+          answer(str): initial answer (default answer) y or n.
+
+    """
+
+    def __init__(self, question, answer):
+        """ Get the args. """
+
+        self.question = question
+        self.answer = answer
+
+    def check(self):
+        """ Text menu to do question and check the answer. """
+
+        check_ok = 0
+        while check_ok == 0:
+            self.answer = raw_input('{0}'.format(self.question))
+            if (self.answer == 'y') or (self.answer == 'Y'):
+                self.answer = 'y'
+                check_ok = 1
+
+            elif (self.answer == 'n') or (self.answer == 'N'):
+                self.answer = 'n'
+                check_ok = 1
+
+            else:
+                print ('Please use y or n!')
+                check_ok = 0
+
+        return self.answer
