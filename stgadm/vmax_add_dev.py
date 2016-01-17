@@ -71,8 +71,7 @@ class New:
                                              self.sgn)
 
         evidence_file = open('{0}/stgadm/evidences/{1}_{2}_{3}.txt'.format(
-            config.stghome, self.change, self.ign, self.time, 'w')
-        )
+            config.stghome, self.change, self.ign, self.time), 'w')
 
         evidence_file.write(
             "# Evidence\n"
@@ -116,7 +115,7 @@ class New:
 
         file_change.write(
             "\n"
-            "#import \n"
+            "# import \n"
             "\n"
             "import sys\n"
             "import vmax_add_dev\n"
@@ -182,7 +181,7 @@ class New:
     def closechange(self):
         """ Close the file and move to correct directory """
 
-        file_change.write('\n\n# File closed with success by STGAdm.\n')
+        file_change.write('\n# File closed with success by STGAdm.\n')
         file_change.close()
 
         orig_change = '{0}/stgadm/tmp/{1}_{2}_{3}.py'.format(
