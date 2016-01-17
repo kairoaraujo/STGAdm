@@ -129,7 +129,7 @@ class VMAX(object):
             return c_sgn.returncode, sgn_err
 
     def create_dev(self, count=0, lun_size=0, member_size=0,
-                   dev_type='', pool='', sgn=''):
+                   lun_type='', pool='', sgn=''):
 
         # convert size GB to CYL
         lun_size = int(lun_size)
@@ -139,7 +139,7 @@ class VMAX(object):
 
         self.validate_args()
 
-        if dev_type == 'meta':
+        if lun_type == 'meta':
             create_dev_cmd = 'echo {0}/symconfigure -sid {1} -cmd \" ' \
                              'create dev count= {1}, size= {3} CYL, ' \
                              'emulation=FBA , config=TDEV , ' \
@@ -154,7 +154,7 @@ class VMAX(object):
                         pool,
                         sgn)
 
-        elif dev_type == 'regular':
+        elif lun_type == 'regular':
 
             create_dev_cmd = 'echo {0}/symconfigure -sid {1} -cmd \" ' \
                              'create dev count= {2}, size= {3} CYL, ' \

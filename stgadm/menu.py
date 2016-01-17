@@ -194,7 +194,7 @@ def menu_emc_vmax(change=None, hostname_client=None, storage_name=None,
         elif device_type == '1':
 
             device_type = 'regular'
-            member_size = None
+            member_size = 0
             return member_size, device_type
 
         else:
@@ -202,8 +202,8 @@ def menu_emc_vmax(change=None, hostname_client=None, storage_name=None,
             choose_device_type()
 
     device_config = choose_device_type()
-    lun_type = device_config[0]
-    member_meta_size = device_config[1]
+    member_meta_size = device_config[0]
+    lun_type = device_config[1]
 
     disk_count = disk_volume / lun_size
 
@@ -212,6 +212,7 @@ def menu_emc_vmax(change=None, hostname_client=None, storage_name=None,
                                   ign, mvn, sgn, pool_list[pool_option],
                                   disk_volume, lun_size, lun_type,
                                   member_meta_size, disk_count)
+
     new_change.preview()
 
     save_config = fields.YesNo('Do you would like save this allocation?: ',

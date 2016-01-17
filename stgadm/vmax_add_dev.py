@@ -57,7 +57,7 @@ class New:
         print('Device type   : {0}'.format(self.lun_type))
         if self.lun_type == 'meta':
             print('Member Size   : {0}GB (meta)'.format(self.member_meta_size))
-            print('Disk Count    : {0}'.format(self.disk_count))
+        print('Disk Count    : {0}'.format(self.disk_count))
         print(50 * '-')
         print('\n')
 
@@ -150,12 +150,12 @@ class New:
             "                       lun_size, lun_type, member_meta_size,\n"
             "                       disk_count)\n"
             "\n"
-            "def preview(self):\n"
+            "def preview():\n"
             "    \n"
             "    {0}_{7}_{16}.preview()\n"
             "    \n"
             "    \n"
-            "def execute(self):\n"
+            "def execute():\n"
             "    \n"
             "    \n"
             "    evidence = {0}_{7}_{16}.execute()\n"
