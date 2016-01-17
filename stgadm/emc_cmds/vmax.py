@@ -128,12 +128,14 @@ class VMAX(object):
         else:
             return c_sgn.returncode, sgn_err
 
-    def create_dev(self, count='0', lun_size='0', member_size='0', dev_type='',
-                   pool='', sgn=''):
+    def create_dev(self, count=0, lun_size=0, member_size=0,
+                   dev_type='', pool='', sgn=''):
 
         # convert size GB to CYL
-        lun_size /= 1092
-        member_size /= 1092
+        lun_size = int(lun_size)
+        member_size = int(member_size)
+        lun_size *= 1092
+        member_size *= 1092
 
         self.validate_args()
 

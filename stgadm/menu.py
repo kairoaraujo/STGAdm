@@ -87,7 +87,6 @@ def main_menu():
 
 def menu_emc_vmax(change=None, hostname_client=None, storage_name=None,
                   stg_name=None, stg_type=None, stg_sid=None, wwn_client=None):
-
     # get storage informations
     global pool_option
 
@@ -208,32 +207,12 @@ def menu_emc_vmax(change=None, hostname_client=None, storage_name=None,
 
     disk_count = disk_volume / lun_size
 
-    print('\nConfig validation\n')
-    print('\nClient Information')
-    print(50 * '-')
-    print('Register      : {0}'.format(change))
-    print('Client Server : {0}'.format(hostname_client))
-    print('Storage Name  : {0}'.format(storage_name))
-    print('WWN Client    : {0}'.format(wwn_client))
-    print('\nStorage Information')
-    print(50 * '-')
-    print('Storage Name          : {0}'.format(stg_name))
-    print('Storage Type          : {0}'.format(stg_type))
-    print('Storage SID           : {0}'.format(stg_sid))
-    print('Initiator Group Name  : {0}'.format(ign))
-    print('Making View Names     : {0}'.format(mvn))
-    print('Storage Group Name    : {0}'.format(sgn))
-    print('Storage Pool          : {0}'.format(pool_list[pool_option]))
-    print('\nInformations about the request:')
-    print(50 * '-')
-    print('Disk Volume   : {0}GB'.format(disk_volume))
-    print('LUN Size      : {0}GB'.format(lun_size))
-    print('Device type   : {0}GB'.format(lun_type))
-    if lun_type == 'meta':
-        print('Member Size   : {0}GB (meta)'.format(member_meta_size))
-    print('DiskCount     : {0}'.format(disk_count))
-    print(50 * '-')
-    print('\n')
+    new_change = vmax_add_dev.New(change, hostname_client, storage_name,
+                                  wwn_client, stg_name, stg_type, stg_sid,
+                                  ign, mvn, sgn, pool_list[pool_option],
+                                  disk_volume, lun_size, lun_type,
+                                  member_meta_size, disk_count)
+    new_change.preview()
 
     save_config = fields.YesNo('Do you would like save this allocation?: ',
                                'n')
@@ -241,12 +220,6 @@ def menu_emc_vmax(change=None, hostname_client=None, storage_name=None,
 
     if save_config == 'y':
 
-        new_change = vmax_add_dev.New(change, hostname_client, storage_name,
-                                      wwn_client, stg_name, stg_type, stg_sid,
-                                      ign, mvn, sgn, pool_list[pool_option],
-                                      disk_volume, lun_size, lun_type,
-                                      member_meta_size, disk_count)
-        new_change.preview()
         new_change.headerchange()
         new_change.writechange()
         end_change = new_change.closechange()

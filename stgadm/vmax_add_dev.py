@@ -54,10 +54,10 @@ class New:
         print(50 * '-')
         print('Disk Volume   : {0}GB'.format(self.disk_volume))
         print('LUN Size      : {0}GB'.format(self.lun_size))
-        print('Device type   : {0}GB'.format(self.lun_type))
+        print('Device type   : {0}'.format(self.lun_type))
         if self.lun_type == 'meta':
             print('Member Size   : {0}GB (meta)'.format(self.member_meta_size))
-        print('DiskCount         : {0}'.format(self.disk_count))
+            print('Disk Count    : {0}'.format(self.disk_count))
         print(50 * '-')
         print('\n')
 
@@ -70,6 +70,22 @@ class New:
                                              self.stg_pool,
                                              self.sgn)
 
+        evidence_file = open('{0}/stgadm/evidences/{1}_{2}_{3}.txt'.format(
+            config.stghome, self.change, self.ign, self.time, 'w')
+        )
+
+        evidence_file.write(
+            "# Evidence\n"
+            "#\n"
+            "\n"
+            "Return code: {0}\n"
+            "\n"
+            "Output:\n"
+            "{1}\n".format(exec_return[0], exec_return[1])
+        )
+
+        evidence_file.close()
+
         return exec_return
 
     def headerchange(self):
@@ -80,7 +96,7 @@ class New:
         file_change = open(
             '{0}/stgadm/tmp/{1}_{2}_{3}.py'.format(config.stghome, self.change,
                                                    self.ign,
-                                                   globalvar.timestr), 'w')
+                                                   self.time), 'w')
 
         file_change.write(
             '#!/usr/bin/env python\n'
@@ -104,7 +120,7 @@ class New:
             "\n"
             "import sys\n"
             "import vmax_add_dev\n"
-            "sys.path.append('..)\n"
+            "sys.path.append('..')\n"
             "import vmax_add_dev\n"
             "\n"
             "# variables\n"
@@ -120,10 +136,10 @@ class New:
             "sgn = '{9}'\n"
             "stg_pool = '{10}'\n"
             "disk_volume = '{11}'\n"
-            "lun_size = '{12}'\n"
+            "lun_size = {12}\n"
             "lun_type = '{13}'\n"
-            "member_meta_size = '{14}'\n"
-            "disk_count = '{15}'\n"
+            "member_meta_size = {14}\n"
+            "disk_count = {15}\n"
             "time = '{16}'\n"
             "\n"
             "\n"
@@ -132,14 +148,14 @@ class New:
             "                       wwn_client, stg_name, stg_type, stg_sid,\n"
             "                       ign, mvn, sgn, stg_pool, disk_volume,\n"
             "                       lun_size, lun_type, member_meta_size,\n"
-            "                       disk_count\n"
+            "                       disk_count)\n"
             "\n"
             "def preview(self):\n"
             "    \n"
             "    {0}_{7}_{16}.preview()\n"
             "    \n"
             "    \n"
-            "def preview(self):\n"
+            "def execute(self):\n"
             "    \n"
             "    \n"
             "    evidence = {0}_{7}_{16}.execute()\n"
@@ -172,11 +188,11 @@ class New:
         orig_change = '{0}/stgadm/tmp/{1}_{2}_{3}.py'.format(
             config.stghome, self.change, self.ign, self.time)
 
-        dest_change = '{0}/stgadm/tmp/{1}_{2}_{3}.py'.format(
+        dest_change = '{0}/stgadm/changes/{1}_{2}_{3}.py'.format(
             config.stghome, self.change, self.ign, self.time)
 
         os.rename(orig_change, dest_change)
 
         if os.path.isfile(dest_change):
-            return 'The change {0} was successfully save.'
+            return 'The change {0} was successfully save.'.format(dest_change)
 
