@@ -1,0 +1,3 @@
+*.pyc
+stgadm/data_tests/*
+*.idea
