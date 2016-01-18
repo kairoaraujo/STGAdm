@@ -142,7 +142,7 @@ def menu_emc_vmax(change=None, hostname_client=None, storage_name=None,
 
     new_change.preview()
 
-    save_config = fields.YesNo('Do you would like save this allocation?: ',
+    save_config = fields.YesNo('Do you would like save this allocation?[y/n]: ',
                                'n')
     save_config = save_config.check()
 
@@ -166,7 +166,7 @@ def main_menu():
 
     stgadm = raw_input('STG Adm options\n\n'
                        '1. Add new volumes to existent host. (create change)\n'
-                       '2. Execute changes created\n'
+                       '2. Execute changes created.\n'
                        '\nPlease choose an option: ')
 
     # Add new volumes to existent host menu
@@ -182,8 +182,6 @@ def main_menu():
         hostname_client.chkfieldstr()
         hostname_client = hostname_client.strvarout()
 
-        storage_name = raw_input('Storage Name: ')
-
         wwn_client = fields.Fields('wwn_client', 'WWN Server Client: ')
         wwn_client.chkfieldstr()
         wwn_client = wwn_client.strvarout()
@@ -198,7 +196,7 @@ def main_menu():
             except (TypeError, ValueError):
                 print(
                     '\tERROR: Total Disk need to be an int value in GB. '
-                    '\nDo not use GB. Example: 1000 for 1000GB (1TB)')
+                    '\nDo not use GB. Example: 1000 for 1000GB (1TB).')
 
         while True:
             try:
@@ -207,7 +205,7 @@ def main_menu():
             except (TypeError, ValueError):
                 print(
                     '\tERROR: LUN Size need to be an int value.'
-                    '\nDo not use GB. Example 100 for 100GB size of LUNs')
+                    '\nDo not use GB. Example 100 for 100GB size of LUNs.')
 
         if ':' in wwn_client:
             wwn_client = wwn_client.replace(':', '')
@@ -221,6 +219,7 @@ def main_menu():
         if stg_type == 'EMC_VMAX':
             stg_sid = get_stg.getsid()
             stg_name = get_stg.getstorage()
+            storage_name = stg_name
             menu_emc_vmax(change, hostname_client, storage_name, stg_name,
                           stg_type, stg_sid, wwn_client)
 
@@ -228,7 +227,7 @@ def main_menu():
             pass
 
         else:
-            print('ERRO: Storage type {0} invalid. Check config file'.format(
+            print('ERROR: Storage type {0} invalid. Check config file'.format(
                 stg_type))
 
     elif stgadm == '2':
@@ -238,8 +237,8 @@ def main_menu():
                   'stgadm.changes.{0}.preview()\"'
                   .format(change_file))
 
-        execute_change = fields.YesNo('Do you would like execute this change?: ',
-                               'n')
+        execute_change = fields.YesNo('Do you would like execute this '
+                                      'change?[y/n]: ','n')
         execute_change = execute_change.check()
 
         if execute_change == 'y':
@@ -253,10 +252,6 @@ def main_menu():
                 config.stghome, change_file)
 
             os.rename(orig_change, dest_change)
-
-            print('\nChange {0} executed. All evidences are in {1}'.format('
-
-
 
     else:
         print 'Wrong option. Exiting.'

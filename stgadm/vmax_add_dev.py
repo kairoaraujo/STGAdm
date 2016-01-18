@@ -119,7 +119,6 @@ class New:
             "\n"
             "# import \n"
             "\n"
-            "import sys\n"
             "from stgadm import vmax_add_dev\n"
             "\n"
             "# variables\n"
@@ -158,7 +157,13 @@ class New:
             "    \n"
             "    \n"
             "    evidence = {0}_{7}_{16}.execute()\n"
-            "    print('All evidences area save inn {0}'.format(evidence)\n"
+            "    print('\\nChange executed!')\n"
+            "    evidence_file=open(evidence)\n"
+            "    print(evidence_file.read())\n"
+            "    evidence_file.close()\n"
+            "    print('\\nAll evidences are in {{0}}\\n'"
+            ".format(evidence))\n"
+            "    \n"
             "    \n".format(
                 self.change,  # 0
                 self.hostname_client,  # 1
