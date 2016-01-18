@@ -232,13 +232,13 @@ def main_menu():
 
     elif stgadm == '2':
 
-        change_file = findchange.select().replace('.py','')
+        change_file = findchange.select().replace('.py', '')
         os.system('python -c \"import stgadm.changes.{0}; '
                   'stgadm.changes.{0}.preview()\"'
                   .format(change_file))
 
         execute_change = fields.YesNo('Do you would like execute this '
-                                      'change?[y/n]: ','n')
+                                      'change?[y/n]: ', 'n')
         execute_change = execute_change.check()
 
         if execute_change == 'y':
@@ -247,7 +247,7 @@ def main_menu():
                       .format(change_file))
 
             orig_change = '{0}/stgadm/changes/{1}.py'.format(config.stghome,
-                                                          change_file)
+                                                             change_file)
             dest_change = '{0}/stgadm/changes_executed/{1}.py'.format(
                 config.stghome, change_file)
 
