@@ -4,7 +4,7 @@
 #
 
 # STGAdm installation directory
-#stghome = "/opt/Atividades/kairo/STGAdm-master"
+# stghome = "/opt/Atividades/kairo/STGAdm-master"
 stghome = "/Users/kairoaraujo/Dev/stgadm"
 
 # Storage List
@@ -25,4 +25,3 @@ storages = {
 }
 
 symcli_path = "/opt/emc/SYMCLI/bin/"
-

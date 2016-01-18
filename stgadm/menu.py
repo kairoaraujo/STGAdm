@@ -9,80 +9,7 @@ import config
 import fields
 import emc_cmds
 import vmax_add_dev
-
-
-def main_menu():
-    global disk_volume, lun_size
-
-    os.system('clear')
-    print('[ Storage Adm ]\n[ Version {0} - © 2015 ]\n\n'.format(
-        globalvar.version))
-
-    stgadm = raw_input('STG Adm options\n\n'
-                       '1. Add new volumes to existent host.\n'
-                       '\nPlease choose an option: ')
-
-    # Add new volumes to existent host menu
-
-    if stgadm == '1':
-
-        print('\n\nRequest informations\n')
-        change = fields.Fields('change', 'Ticket/Change/Work Order: ')
-        change.chkfieldstr()
-        change = change.strvarout()
-
-        hostname_client = fields.Fields('hostname', 'Hostname Client: ')
-        hostname_client.chkfieldstr()
-        hostname_client = hostname_client.strvarout()
-
-        storage_name = raw_input('Storage Name: ')
-
-        wwn_client = fields.Fields('wwn_client', 'WWN Server Client: ')
-        wwn_client.chkfieldstr()
-        wwn_client = wwn_client.strvarout()
-
-        disk_volume = int()
-        lun_size = int()
-
-        while True:
-            try:
-                disk_volume = int(raw_input("Total Disk Required (GB): "))
-                break
-            except (TypeError, ValueError):
-                print(
-                    '\tERROR: Total Disk need to be an int value in GB. '
-                    '\nDo not use GB. Example: 1000 for 1000GB (1TB)')
-
-        while True:
-            try:
-                lun_size = int(raw_input("Default LUN size (GB): "))
-                break
-            except (TypeError, ValueError):
-                print(
-                    '\tERROR: LUN Size need to be an int value.'
-                    '\nDo not use GB. Example 100 for 100GB size of LUNs')
-
-        if ':' in wwn_client:
-            wwn_client = wwn_client.replace(':', '')
-
-        # select storage
-        get_stg = systemstorages.SystemStorages()
-        get_stg.selectstorage()
-
-        stg_type = get_stg.gettype()
-
-        if stg_type == 'EMC_VMAX':
-            stg_sid = get_stg.getsid()
-            stg_name = get_stg.getstorage()
-            menu_emc_vmax(change, hostname_client, storage_name, stg_name,
-                          stg_type, stg_sid, wwn_client)
-
-        elif stg_type == 'EMC_VNX':
-            pass
-
-        else:
-            print('ERRO: Storage type {0} invalid. Check config file'.format(
-                stg_type))
+import findchange
 
 
 def menu_emc_vmax(change=None, hostname_client=None, storage_name=None,
@@ -228,3 +155,99 @@ def menu_emc_vmax(change=None, hostname_client=None, storage_name=None,
 
     else:
         print('Finishing. Thank you.')
+
+
+def main_menu():
+    global disk_volume, lun_size
+
+    os.system('clear')
+    print('[ Storage Adm ]\n[ Version {0} - © 2015 ]\n\n'.format(
+        globalvar.version))
+
+    stgadm = raw_input('STG Adm options\n\n'
+                       '1. Add new volumes to existent host. (create change)\n'
+                       '2. Execute changes created\n'
+                       '\nPlease choose an option: ')
+
+    # Add new volumes to existent host menu
+
+    if stgadm == '1':
+
+        print('\n\nRequest informations\n')
+        change = fields.Fields('change', 'Ticket/Change/Work Order: ')
+        change.chkfieldstr()
+        change = change.strvarout()
+
+        hostname_client = fields.Fields('hostname', 'Hostname Client: ')
+        hostname_client.chkfieldstr()
+        hostname_client = hostname_client.strvarout()
+
+        storage_name = raw_input('Storage Name: ')
+
+        wwn_client = fields.Fields('wwn_client', 'WWN Server Client: ')
+        wwn_client.chkfieldstr()
+        wwn_client = wwn_client.strvarout()
+
+        disk_volume = int()
+        lun_size = int()
+
+        while True:
+            try:
+                disk_volume = int(raw_input("Total Disk Required (GB): "))
+                break
+            except (TypeError, ValueError):
+                print(
+                    '\tERROR: Total Disk need to be an int value in GB. '
+                    '\nDo not use GB. Example: 1000 for 1000GB (1TB)')
+
+        while True:
+            try:
+                lun_size = int(raw_input("Default LUN size (GB): "))
+                break
+            except (TypeError, ValueError):
+                print(
+                    '\tERROR: LUN Size need to be an int value.'
+                    '\nDo not use GB. Example 100 for 100GB size of LUNs')
+
+        if ':' in wwn_client:
+            wwn_client = wwn_client.replace(':', '')
+
+        # select storage
+        get_stg = systemstorages.SystemStorages()
+        get_stg.selectstorage()
+
+        stg_type = get_stg.gettype()
+
+        if stg_type == 'EMC_VMAX':
+            stg_sid = get_stg.getsid()
+            stg_name = get_stg.getstorage()
+            menu_emc_vmax(change, hostname_client, storage_name, stg_name,
+                          stg_type, stg_sid, wwn_client)
+
+        elif stg_type == 'EMC_VNX':
+            pass
+
+        else:
+            print('ERRO: Storage type {0} invalid. Check config file'.format(
+                stg_type))
+
+    elif stgadm == '2':
+
+        change_file = findchange.select()
+        os.system('python -c \"import changes.{0}; \"changes.{0}.preview()'
+                  .format(change_file))
+        execute = fields.YesNo('Do you would like execute this change?: ',
+                               'n')
+        if execute == 'y':
+            os.system('python -c \"import changes.{0}; \"changes.{0}.execute()'
+                      .format(change_file))
+
+            orig_change = '{0}/stgadm/changes/{1}'.format(config.stghome,
+                                                          change_file)
+            dest_change = '{0}/stgadm/changes_executed/{1}'.format(
+                config.stghome, change_file)
+
+            os.rename(orig_change, dest_change)
+
+    else:
+        print 'Wrong option. Exiting.'
