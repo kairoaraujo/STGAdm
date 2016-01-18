@@ -70,8 +70,9 @@ class New:
                                              self.stg_pool,
                                              self.sgn)
 
-        evidence_file = open('{0}/stgadm/evidences/{1}_{2}_{3}.txt'.format(
-            config.stghome, self.change, self.ign, self.time), 'w')
+        file_name = '{0}/stgadm/evidences/{1}_{2}_{3}.txt'.format(
+            config.stghome, self.change, self.ign, self.time)
+        evidence_file = open(file_name, 'w')
 
         evidence_file.write(
             "# Evidence\n"
@@ -85,7 +86,7 @@ class New:
 
         evidence_file.close()
 
-        return exec_return
+        return file_name
 
     def headerchange(self):
         """ Write the header of file. """
@@ -119,9 +120,7 @@ class New:
             "# import \n"
             "\n"
             "import sys\n"
-            "import vmax_add_dev\n"
-            "sys.path.append('..')\n"
-            "import vmax_add_dev\n"
+            "from stgadm import vmax_add_dev\n"
             "\n"
             "# variables\n"
             "change = '{0}'\n"
@@ -159,7 +158,7 @@ class New:
             "    \n"
             "    \n"
             "    evidence = {0}_{7}_{16}.execute()\n"
-            "    print evidence"
+            "    print('All evidences area save inn {0}'.format(evidence)\n"
             "    \n".format(
                 self.change,  # 0
                 self.hostname_client,  # 1

@@ -233,21 +233,30 @@ def main_menu():
 
     elif stgadm == '2':
 
-        change_file = findchange.select()
-        os.system('python -c \"import changes.{0}; \"changes.{0}.preview()'
+        change_file = findchange.select().replace('.py','')
+        os.system('python -c \"import stgadm.changes.{0}; '
+                  'stgadm.changes.{0}.preview()\"'
                   .format(change_file))
-        execute = fields.YesNo('Do you would like execute this change?: ',
+
+        execute_change = fields.YesNo('Do you would like execute this change?: ',
                                'n')
-        if execute == 'y':
-            os.system('python -c \"import changes.{0}; \"changes.{0}.execute()'
+        execute_change = execute_change.check()
+
+        if execute_change == 'y':
+            os.system('python -c \"import stgadm.changes.{0}; '
+                      'stgadm.changes.{0}.execute()\"'
                       .format(change_file))
 
-            orig_change = '{0}/stgadm/changes/{1}'.format(config.stghome,
+            orig_change = '{0}/stgadm/changes/{1}.py'.format(config.stghome,
                                                           change_file)
-            dest_change = '{0}/stgadm/changes_executed/{1}'.format(
+            dest_change = '{0}/stgadm/changes_executed/{1}.py'.format(
                 config.stghome, change_file)
 
             os.rename(orig_change, dest_change)
+
+            print('\nChange {0} executed. All evidences are in {1}'.format('
+
+
 
     else:
         print 'Wrong option. Exiting.'
