@@ -13,7 +13,7 @@ class New:
                  wwn_client=None, stg_name=None, stg_type=None, stg_sid=None,
                  ign=None, mvn=None, sgn=None, stg_pool=None, disk_volume=None,
                  lun_size=None, lun_type=None, member_meta_size=None,
-                 disk_count=None):
+                 disk_count=None, prepare=None):
 
         self.change = change
         self.hostname_client = hostname_client
@@ -31,6 +31,7 @@ class New:
         self.lun_type = lun_type
         self.member_meta_size = member_meta_size
         self.disk_count = disk_count
+        self.prepare = prepare
         self.time = globalvar.timestr.replace('-', '_')
 
     def preview(self):
@@ -61,6 +62,8 @@ class New:
         print(50 * '-')
         print('\n')
 
+        print('Executing prepare mode to check. Please wait...\n')
+
         preview_change = pystorage.EMC.VMAX(config.symcli_path)
         exec_return = exec_change.create_dev(self.stg_sid,
                                              self.disk_count,
@@ -70,6 +73,9 @@ class New:
                                              self.stg_pool,
                                              self.sgn,
                                              'prepare')
+
+        print(exec_return[1])
+        print('\n** Return Code: {0} **'.format(exec_return[0]))
 
     def execute(self):
         exec_change = pystorage.EMC.VMAX(config.symcli_path)
@@ -150,25 +156,26 @@ class New:
             "lun_type = '{13}'\n"
             "member_meta_size = {14}\n"
             "disk_count = {15}\n"
-            "time = '{16}'\n"
+            "action = {16}"
+            "time = '{17}'\n"
             "\n"
             "\n"
-            "{0}_{7}_{16} = vmax_add_dev.New(\n"
+            "{0}_{7}_{17} = vmax_add_dev.New(\n"
             "                       change, hostname_client, storage_name,\n"
             "                       wwn_client, stg_name, stg_type, stg_sid,\n"
             "                       ign, mvn, sgn, stg_pool, disk_volume,\n"
             "                       lun_size, lun_type, member_meta_size,\n"
-            "                       disk_count)\n"
+            "                       disk_count, prepare)\n"
             "\n"
             "def preview():\n"
             "    \n"
-            "    {0}_{7}_{16}.preview()\n"
+            "    {0}_{7}_{17}.preview()\n"
             "    \n"
             "    \n"
             "def execute():\n"
             "    \n"
             "    \n"
-            "    evidence = {0}_{7}_{16}.execute()\n"
+            "    evidence = {0}_{7}_{17}.execute()\n"
             "    print('\\nChange executed!')\n"
             "    evidence_file=open(evidence)\n"
             "    print(evidence_file.read())\n"
@@ -193,7 +200,8 @@ class New:
                 self.lun_type,  # 13
                 self.member_meta_size,  # 14
                 self.disk_count,  # 15
-                self.time))  # 16)
+                self.action,
+                self.time))  # 17)
 
     def closechange(self):
         """ Close the file and move to correct directory """
