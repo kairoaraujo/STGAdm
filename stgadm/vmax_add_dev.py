@@ -4,7 +4,7 @@
 #
 import config
 import globalvar
-import emc_cmds
+import pystorage
 import os
 
 
@@ -62,7 +62,7 @@ class New:
         print('\n')
 
     def execute(self):
-        exec_change = emc_cmds.VMAX(config.symcli_path, self.stg_sid)
+        exec_change = pystorage.EMC.VMAX(config.symcli_path)
         exec_return = exec_change.create_dev(self.disk_count,
                                              self.lun_size,
                                              self.member_meta_size,

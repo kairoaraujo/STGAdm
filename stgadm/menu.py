@@ -7,7 +7,7 @@ import globalvar
 import systemstorages
 import config
 import fields
-import emc_cmds
+import pystorage
 import vmax_add_dev
 import findchange
 
@@ -17,11 +17,11 @@ def menu_emc_vmax(change=None, hostname_client=None, storage_name=None,
     # get storage informations
     global pool_option
 
-    chk_server = emc_cmds.VMAX(config.symcli_path, stg_sid)
+    chk_server = pystorage.EMC.VMAX(config.symcli_path)
 
     print('\nCollecting some storage informations. Please wait...')
 
-    ign = chk_server.get_ign(wwn_client)
+    ign = chk_server.get_ign(stg_sid, wwn_client)
 
     if ign[0] != 0:
         print('ERROR: {0}'.format(ign[1].replace('\n', '')))
@@ -29,7 +29,7 @@ def menu_emc_vmax(change=None, hostname_client=None, storage_name=None,
     else:
         ign = ign[1]
 
-    mvn = chk_server.get_mvn(ign)
+    mvn = chk_server.get_mvn(stg_sid, ign)
 
     if mvn[0] != 0:
         print('ERROR: {0}'.format(mvn[1]))
@@ -37,7 +37,7 @@ def menu_emc_vmax(change=None, hostname_client=None, storage_name=None,
     else:
         mvn = mvn[1]
 
-    sgn = chk_server.get_sgn(mvn)
+    sgn = chk_server.get_sgn(stg_sid, mvn)
 
     if sgn[0] != 0:
         print('ERROR: {0}'.format(sgn[1]))
@@ -48,7 +48,7 @@ def menu_emc_vmax(change=None, hostname_client=None, storage_name=None,
     print('\nGetting information about pools from storage. Please wait...')
 
     # get storage pools
-    lspool = chk_server.lspools()
+    lspool = chk_server.lspools(stg_sid)
 
     # check if command worked well.
     if lspool[0] != 0:

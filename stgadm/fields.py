@@ -7,7 +7,7 @@ class Fields:
 
         Args:
           field (str): The filed variable, like 'name', 'change' etc...
-          textField (stg): The question for the field, like 'Whats de LPAR name'
+          textfield (stg): The question for the field, like 'Whats de LPAR name'
                            'Whats the change number' etc .
     """
 
@@ -15,7 +15,7 @@ class Fields:
         """ Initial to get field and textField arguments. """
 
         self.field = field
-        self.textField = textfield
+        self.textfield = textfield
         self.variable = variable
 
     def chkfieldstr(self):
@@ -23,7 +23,7 @@ class Fields:
 
         while True:
 
-            self.variable = raw_input('{0}'.format(self.textField))
+            self.variable = raw_input('{0}'.format(self.textfield))
             if (self.variable.isspace()) or (self.variable == '') or \
                     (' ' in self.variable):
                 print ("{0} can not be blank or contain spaces".

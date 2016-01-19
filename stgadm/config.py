@@ -4,8 +4,8 @@
 #
 
 # STGAdm installation directory
-# stghome = "/opt/Atividades/kairo/STGAdm-master"
-stghome = "/Users/kairoaraujo/Dev/stgadm"
+stghome = "/opt/Atividades/kairo/STGAdm-master"
+# stghome = "/Users/kairoaraujo/Dev/stgadm"
 
 # Storage List
 # Important:
