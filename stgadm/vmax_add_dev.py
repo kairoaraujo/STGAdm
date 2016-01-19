@@ -61,6 +61,16 @@ class New:
         print(50 * '-')
         print('\n')
 
+        preview_change = pystorage.EMC.VMAX(config.symcli_path)
+        exec_return = exec_change.create_dev(self.stg_sid,
+                                             self.disk_count,
+                                             self.lun_size,
+                                             self.member_meta_size,
+                                             self.lun_type,
+                                             self.stg_pool,
+                                             self.sgn,
+                                             'prepare')
+
     def execute(self):
         exec_change = pystorage.EMC.VMAX(config.symcli_path)
         exec_return = exec_change.create_dev(self.stg_sid,
@@ -69,7 +79,8 @@ class New:
                                              self.member_meta_size,
                                              self.lun_type,
                                              self.stg_pool,
-                                             self.sgn)
+                                             self.sgn,
+                                             'commit')
 
         file_name = '{0}/stgadm/evidences/{1}_{2}_{3}.txt'.format(
             config.stghome, self.change, self.ign, self.time)
