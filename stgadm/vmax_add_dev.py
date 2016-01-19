@@ -63,7 +63,8 @@ class New:
 
     def execute(self):
         exec_change = pystorage.EMC.VMAX(config.symcli_path)
-        exec_return = exec_change.create_dev(self.disk_count,
+        exec_return = exec_change.create_dev(self.stg_sid,
+                                             self.disk_count,
                                              self.lun_size,
                                              self.member_meta_size,
                                              self.lun_type,
