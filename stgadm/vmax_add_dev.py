@@ -13,7 +13,7 @@ class New:
                  wwn_client=None, stg_name=None, stg_type=None, stg_sid=None,
                  ign=None, mvn=None, sgn=None, stg_pool=None, disk_volume=None,
                  lun_size=None, lun_type=None, member_meta_size=None,
-                 disk_count=None, prepare=None):
+                 disk_count=None, action=None):
 
         self.change = change
         self.hostname_client = hostname_client
@@ -31,7 +31,7 @@ class New:
         self.lun_type = lun_type
         self.member_meta_size = member_meta_size
         self.disk_count = disk_count
-        self.prepare = prepare
+        self.action = action
         self.time = globalvar.timestr.replace('-', '_')
 
     def preview(self):
@@ -63,21 +63,26 @@ class New:
         print('\n')
 
         print('Executing prepare mode to check. Please wait...\n')
-
+        self.action = 'prepare'
         preview_change = pystorage.EMC.VMAX(config.symcli_path)
-        exec_return = exec_change.create_dev(self.stg_sid,
-                                             self.disk_count,
-                                             self.lun_size,
-                                             self.member_meta_size,
-                                             self.lun_type,
-                                             self.stg_pool,
-                                             self.sgn,
-                                             'prepare')
+        exec_return = preview_change.create_dev(self.stg_sid,
+                                                self.disk_count,
+                                                self.lun_size,
+                                                self.member_meta_size,
+                                                self.lun_type,
+                                                self.stg_pool,
+                                                self.sgn,
+                                                self.action)
 
         print(exec_return[1])
-        print('\n** Return Code: {0} **'.format(exec_return[0]))
+
+        if exec_return[0] != 0:
+            print('\n** ERROR Code: {0} **\n'.format(exec_return[0]))
+        else:
+            print('\n** Return Code: {0} **\n'.format(exec_return[0]))
 
     def execute(self):
+        self.action = 'commit'
         exec_change = pystorage.EMC.VMAX(config.symcli_path)
         exec_return = exec_change.create_dev(self.stg_sid,
                                              self.disk_count,
@@ -86,7 +91,7 @@ class New:
                                              self.lun_type,
                                              self.stg_pool,
                                              self.sgn,
-                                             'commit')
+                                             self.action)
 
         file_name = '{0}/stgadm/evidences/{1}_{2}_{3}.txt'.format(
             config.stghome, self.change, self.ign, self.time)
@@ -156,7 +161,7 @@ class New:
             "lun_type = '{13}'\n"
             "member_meta_size = {14}\n"
             "disk_count = {15}\n"
-            "action = {16}"
+            "action = '{16}\n"
             "time = '{17}'\n"
             "\n"
             "\n"
@@ -165,7 +170,7 @@ class New:
             "                       wwn_client, stg_name, stg_type, stg_sid,\n"
             "                       ign, mvn, sgn, stg_pool, disk_volume,\n"
             "                       lun_size, lun_type, member_meta_size,\n"
-            "                       disk_count, prepare)\n"
+            "                       disk_count, action)\n"
             "\n"
             "def preview():\n"
             "    \n"
