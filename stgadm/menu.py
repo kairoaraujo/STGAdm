@@ -15,7 +15,7 @@ import findchange
 def menu_emc_vmax(change=None, hostname_client=None, storage_name=None,
                   stg_name=None, stg_type=None, stg_sid=None, wwn_client=None):
     # get storage informations
-    global pool_option
+    global pool_option, mvn_option
 
     chk_server = pystorage.EMC.VMAX(config.symcli_path)
 
@@ -26,6 +26,7 @@ def menu_emc_vmax(change=None, hostname_client=None, storage_name=None,
     if ign[0] != 0:
         print('ERROR: {0}'.format(ign[1].replace('\n', '')))
         exit(1)
+
     else:
         ign = ign[1]
 
@@ -34,8 +35,28 @@ def menu_emc_vmax(change=None, hostname_client=None, storage_name=None,
     if mvn[0] != 0:
         print('ERROR: {0}'.format(mvn[1]))
         exit(1)
+
     else:
-        mvn = mvn[1]
+        if len(mvn) > 2:
+            count = 0
+            mvn.remove(mvn[0])
+
+            for l_mvn in mvn:
+                print ('{0}: {1}'.format(count, l_mvn))
+                count += 1
+
+            while True:
+                try:
+                    mvn_option = int(raw_input("Select the MVN: "))
+                    break
+                except IndexError:
+                    print('\tERROR: Select an existing option between'
+                          '0 and {0}.'.format(count))
+
+            mvn = mvn[mvn_option]
+
+        else:
+            mvn = mvn[1]
 
     sgn = chk_server.get_sgn(stg_sid, mvn)
 
@@ -161,7 +182,7 @@ def main_menu():
     global disk_volume, lun_size
 
     os.system('clear')
-    print('[ Storage Adm ]\n[ Version {0} - © 2015 ]\n\n'.format(
+    print('[ Storage Adm ]\n[ Version {0} - © 2016 ]\n\n'.format(
         globalvar.version))
 
     stgadm = raw_input('STG Adm options\n\n'
