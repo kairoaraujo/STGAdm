@@ -41,6 +41,7 @@ def menu_emc_vmax(change=None, hostname_client=None, storage_name=None,
             count = 0
             mvn.remove(mvn[0])
 
+            print('\nMultiples MVN detected. Please choose an MVN.\n')
             for l_mvn in mvn:
                 print ('{0}: {1}'.format(count, l_mvn))
                 count += 1
