@@ -19,17 +19,17 @@ $ pip install PyStorage
 
 - Download latest version of STGAdm
 
-https://github.com/kairoaraujo/STGAdm/releases
+    https://github.com/kairoaraujo/STGAdm/releases
  
 Uncompress the util
 
 - Configure the STGAdm
 
-STGAdm/stgadm/config.py
+    STGAdm/stgadm/config.py
 
 - Execute the STGAdm
 
-$ python stgadm.py
+    $ python stgadm.py
 
 An interactive menu will be appear. Have fun!
     
