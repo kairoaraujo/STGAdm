@@ -161,7 +161,7 @@ class New:
             "lun_type = '{13}'\n"
             "member_meta_size = {14}\n"
             "disk_count = {15}\n"
-            "action = '{16}\n"
+            "action = '{16}'\n"
             "time = '{17}'\n"
             "\n"
             "\n"
