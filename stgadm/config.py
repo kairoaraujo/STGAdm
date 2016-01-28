@@ -24,4 +24,16 @@ storages = {
     'CD01 (IBM pSeries)': ['IBM_DS8K', 'CD01']
 }
 
+# EMC Configurations
+#
+
+# SYMCLI bin dir path
 symcli_path = "/opt/emc/SYMCLI/bin/"
+
+# IBM Configurations
+#
+
+# DSCLI binary
+dscli_bin = "/opt/ibm/dscli/dscli"
+# DSCLI profiles path
+dscli_profile_path = "/opt/ibm/dscli/profile/"

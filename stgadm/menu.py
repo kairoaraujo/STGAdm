@@ -178,6 +178,13 @@ def menu_emc_vmax(change=None, hostname_client=None, storage_name=None,
     else:
         print('Finishing. Thank you.')
 
+def menu_ibm_ds8k(change=None, hostname_client=None, storage_name=None,
+                  stg_name=None, stg_type=None, stg_sid=None, wwn_client=None):
+
+    ds8k = pystorage.IBM.DS8K(config.dscli_bin, config.dscli_profile_path)
+
+    return ds8k
+
 
 def main_menu():
     global disk_volume, lun_size
