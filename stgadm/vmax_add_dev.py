@@ -134,10 +134,6 @@ class New:
     def writechange(self):
         """ Write the body of file. """
 
-        #
-        # config functions to write correct action to lpar
-        #
-
         file_change.write(
             "\n"
             "# import \n"
