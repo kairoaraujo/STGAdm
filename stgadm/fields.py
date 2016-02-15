@@ -31,7 +31,7 @@ class Fields:
                        format(self.field))
 
             elif not re.match("^[A-Za-z0-9_-]*$", self.variable):
-                print ("{0} can be only netters and numbers.".
+                print ("{0} can be only letters and numbers.".
                        format(self.field))
 
             else:
