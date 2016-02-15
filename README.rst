@@ -46,7 +46,7 @@ An interactive menu will be appear. Have fun!
 Screenshots
 -----------
 
-..:image:: images/ss1.png
+.. image:: images/ss1.png
 
 
     
