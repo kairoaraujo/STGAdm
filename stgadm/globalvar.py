@@ -6,5 +6,5 @@ import time
 
 
 timestr = time.strftime("%m%d%Y-%H%M%S")
-version = '0.2-beta'
+version = '0.2.0'
 
