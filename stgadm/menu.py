@@ -19,6 +19,11 @@ def menu_emc_vmax(change=None, hostname_client=None, storage_name=None,
     # get storage informations
     global pool_option, mvn_option
 
+    if not os.path.isdir(config.symcli_path):
+        print ("\nERROR: SYMCLI path dir not found. Check config file item "
+               "symcli_path.")
+        exit()
+
     chk_server = pystorage.EMC.VMAX(config.symcli_path)
 
     print('\nCollecting some storage informations. Please wait...')
@@ -88,6 +93,7 @@ def menu_emc_vmax(change=None, hostname_client=None, storage_name=None,
         print('Error: {0}'.format(lspool[1]))
         exit(1)
 
+    print('\n[POOL Selection]')
     lspool = lspool[1]
     print lspool
     lspool = lspool.split('\n')
@@ -193,7 +199,16 @@ def menu_emc_vmax(change=None, hostname_client=None, storage_name=None,
 
 def menu_ibm_ds8k(change=None, hostname_client=None, storage_name=None,
                   stg_name=None, stg_type=None, stg_sid=None, wwn_client=None):
-    global pool_1_option, pool_2_option
+    global pool_1_option, pool_2_option, code_1_pool, code_2_pool
+
+    if not os.path.isfile(config.dscli_bin):
+        print ("\nERROR: DSCLI not found. Check config file item dscli_bin.")
+        exit()
+
+    if not os.path.isfile(config.dscli_profile_path + '/' + stg_sid):
+        print ("\nERROR: DSCLI not found. Check config file item "
+               "dscli_profile_path for {0}".format(stg_name))
+        exit()
 
     ds8k = pystorage.IBM.DS8K(config.dscli_bin,
                               config.dscli_profile_path + '/' + stg_sid)
@@ -270,7 +285,6 @@ def menu_ibm_ds8k(change=None, hostname_client=None, storage_name=None,
                 break
         except ValueError:
             print ("The code need to be between 00 and FF.")
-
 
 
     print("Primary pool: {0} | LUN ID Code: {1}\n".format(
@@ -382,10 +396,15 @@ def main_menu():
     global disk_volume, lun_size
 
     os.system('clear')
-    print('[ Storage Adm ]\n[ Version {0} - © 2016 ]\n\n'.format(
-        globalvar.version))
+    print('')
+    print('[ Storage Adm                           ]')
+    print('[                                       ]')
+    print('[ Version {0} - (c) 2016 Kairo Araujo ]'.format(globalvar.version))
+    print('[ http://github.com/kairoaraujo/STGAdm  ]')
+    print('[ BSD License                           ]')
+    print('[                                       ]')
 
-    stgadm = raw_input('STG Adm options\n\n'
+    stgadm = raw_input('\nMain Menu:\n\n'
                        '1. Add new volumes to existent host. (create change)\n'
                        '2. Execute changes created.\n'
                        '\nPlease choose an option: ')
@@ -394,7 +413,7 @@ def main_menu():
 
     if stgadm == '1':
 
-        print('\n\nRequest informations\n')
+        print('\n\n[ REQUEST INFORMATIONS ]\n')
 
         change = fields.Fields('change', 'Ticket/Change/Work Order: ')
         change.chkfieldstr()
