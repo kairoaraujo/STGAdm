@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import re
 
 
 class Fields:
@@ -28,6 +29,11 @@ class Fields:
                     (' ' in self.variable):
                 print ("{0} can not be blank or contain spaces".
                        format(self.field))
+
+            elif not re.match("^[A-Za-z0-9_-]*$", self.variable):
+                print ("{0} can be only netters and numbers.".
+                       format(self.field))
+
             else:
                 break
 
