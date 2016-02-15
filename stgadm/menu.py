@@ -256,13 +256,13 @@ def menu_ibm_ds8k(change=None, hostname_client=None, storage_name=None,
     pool_1_option = pool_list[pool_1_option]
     # cleaning the selected pool
     pool_list.remove(pool_1_option)
-    print("\nPlease select the LUN ID CODE "
+    print("\nPlease select the LUN LSS ID CODE "
           "to be used by {0}\n"
           "The code need to be between 00 and FF".format(pool_1_option))
 
     while True:
         try:
-            code_1_pool = raw_input('Digit the code: ')
+            code_1_pool = raw_input('Digit the LSS: ')
             int(code_1_pool, 16)
             if len(code_2_pool) != 2:
                 print ("The code need to be between 00 and FF.")
@@ -293,13 +293,13 @@ def menu_ibm_ds8k(change=None, hostname_client=None, storage_name=None,
 
     pool_2_option = pool_list[pool_2_option]
 
-    print("\nPlease select the LUN ID CODE "
+    print("\nPlease select the LUN LSS ID CODE "
           "to be used by {0}\n"
           "The code need to be between 00 and FF".format(pool_2_option))
 
     while True:
         try:
-            code_2_pool = raw_input('Digit the code: ')
+            code_2_pool = raw_input('Digit the LSS: ')
             int(code_2_pool, 16)
             if len(code_2_pool) != 2:
                 print ("The code need to be between 00 and FF.")
