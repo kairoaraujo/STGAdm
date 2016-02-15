@@ -46,7 +46,7 @@ class New:
 
     def preview(self):
         print('\nConfig validation\n')
-        print('\033[1;34m\nClient Information:\033[1;00m\n')
+        print('\033[1;34m\nClient Information:\033[1;00m')
         print(90 * '-')
         print('Register                   : {0}'.format(self.change))
         print('Client Server              : {0}'.format(self.hostname_client))
@@ -55,7 +55,7 @@ class New:
             self.hostname_client_stg))
         print('Storage Volume Group       : {0}'.format(self.vol_group))
         print('WWN Client                 : {0}'.format(self.wwn_client))
-        print('\033[1;34m\nStorage Information:\033[1;00m\n')
+        print('\033[1;34m\nStorage Information:\033[1;00m')
         print(90 * '-')
         print('Storage Name   : {0}'.format(self.stg_name))
         print('Storage Type   : {0}'.format(self.stg_type))
@@ -66,7 +66,7 @@ class New:
         print('Pool Secondary : {0} *LSS IDs: {1}'.format(
             self.pool_2_option, self.lss_2_id_list))
         print('\_ LUNS:       : {0}'.format(self.lun_2_list))
-        print('\033[1;34m\nInformations about the request:\033[1;00m\n')
+        print('\033[1;34m\nInformations about the request:\033[1;00m')
         print(90 * '-')
         print('Disk Volume   : {0}GB'.format(self.disk_volume))
         print('LUN Size      : {0}GB'.format(self.lun_size))
@@ -143,6 +143,11 @@ class New:
             for lineids in line_reservedids:
                 reserved_ids.write(lineids.replace(l_id+'\n', ''))
             reserved_ids.close()
+
+
+        evidence_file = open(file_name, 'a')
+        evidence_file.write(ds8k.lsfbvol('-volgrp {0}'.format(self.vol_group[1])))
+        evidence_file.close()
 
         return file_name
 
