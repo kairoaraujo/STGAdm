@@ -11,10 +11,11 @@ import os
 class GetID:
     def __init__(self, dscli_bin, dscli_profile_path, lss_id):
         """
+        Manage the IDs for IBM DS8K
 
-        :param dscli_bin:
-        :param dscli_profile_path:
-        :param lss_id:
+        :param dscli_bin: path of dscli_bin
+        :param dscli_profile_path: profile file os dscli
+        :param lss_id: LSS ID tat you want to ge the free ids (ex: A6)
         :return:
         """
 
