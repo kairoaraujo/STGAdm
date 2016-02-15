@@ -35,7 +35,7 @@ class SystemStorages:
                 storage_option = int(raw_input("System Storage: "))
                 self.stg_sys = (storages_keys[storage_option])
                 break
-            except IndexError:
+            except (IndexError, ValueError):
                 print(
                     '\tERROR: Select an existing option between'
                     '0 and {0}.'.format(storages_length))

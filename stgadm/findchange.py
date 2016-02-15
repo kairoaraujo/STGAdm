@@ -29,7 +29,7 @@ def select():
                 raw_input("\nWhat's change/ticket id you want execute?: "))
             change_exec = (listchanges[change_option])
             break
-        except IndexError:
+        except (IndexError, ValueError):
             print(
                 '\tERROR: Select an existing option between 0 and {0}.'.format(
                     listchanges_length))
