@@ -381,12 +381,15 @@ def menu_ibm_ds8k(change=None, hostname_client=None, storage_name=None,
 
     print("\nPlease wait...")
 
-    print ("Please give the SID (Code to identify) the LUNs.\n"
+    print ("Please give the TAG/SID (Code to identify) the LUNs.\n"
            "Use a name to identify the environment or client.\n"
            "Examples: DEV or MIGRATION or FOOBAR\n\n"
-           "With this code the LUNs will be create as SID_LUN_SSL:\n"
+           "With this code the LUNs will be create as TAG/SID_LUN_SSL:\n"
            "Example: DEV_LUN_A601 or MIGRATION_LUN_AA07 or FOOBAR_LUN_045A\n")
-    lun_sid = raw_input("LUN SID: ")
+
+    lun_sid = fields.Fields('lun_sid', 'LUN SID(TAG): ')
+    lun_sid.chkfieldstr()
+    lun_sid = lun_sid.strvarout()
 
     new_change = ds8k_add_dev.New(change, hostname_client, storage_name,
                                   wwn_client, stg_name, stg_type, stg_sid,
