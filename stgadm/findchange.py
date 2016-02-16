@@ -10,7 +10,7 @@ import config
 
 def select():
     """ Select the change/ticket file. """
-    print ("\n[LPAR creation]\n"
+    print ("\n[Change/Ticket/WO Execution]\n"
            "\nSelect the Change/Ticket to execute:\n")
     listchanges = fnmatch.filter(
         os.listdir("{0}/stgadm/changes/".format(config.stghome)), "change*.py")
