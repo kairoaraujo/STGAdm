@@ -264,7 +264,7 @@ def menu_ibm_ds8k(change=None, hostname_client=None, storage_name=None,
             disk_2_count = (disk_count / 2)
     else:
         disk_1_count = disk_count
-        disk_2_count = None
+        disk_2_count = 0
 
     # Primary Pool
     count = 0
@@ -375,7 +375,7 @@ def menu_ibm_ds8k(change=None, hostname_client=None, storage_name=None,
             code_1_pool
         ))
 
-        disk_2_count = None
+        disk_2_count = 0
         pool_2_option = None
         lss_2_id_list = []
 
