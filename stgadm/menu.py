@@ -253,6 +253,19 @@ def menu_ibm_ds8k(change=None, hostname_client=None, storage_name=None,
         except (IndexError, ValueError):
             pass
 
+    # disk count (number of disks)
+    disk_count = disk_volume / lun_size
+    if disk_count > 1:
+        if (disk_count % 2) != 0:
+            disk_1_count = (disk_count / 2) + 1
+            disk_2_count = (disk_count / 2)
+        else:
+            disk_1_count = (disk_count / 2)
+            disk_2_count = (disk_count / 2)
+    else:
+        disk_1_count = disk_count
+        disk_2_count = None
+
     # Primary Pool
     count = 0
     for l_pool in pool_list:
@@ -279,72 +292,24 @@ def menu_ibm_ds8k(change=None, hostname_client=None, storage_name=None,
         try:
             code_1_pool = raw_input('Digit the LSS: ')
             int(code_1_pool, 16)
-            if len(code_2_pool) != 2:
+            if len(code_1_pool) != 2:
                 print ("The code need to be between 00 and FF.")
             else:
                 break
         except ValueError:
             print ("The code need to be between 00 and FF.")
-
 
     print("Primary pool: {0} | LUN ID Code: {1}\n".format(
         pool_1_option, code_1_pool))
 
-    # Secondary Pool
-    count = 0
-    for l_pool in pool_list:
-        print ('{0}: {1}'.format(count, l_pool))
-        count += 1
-
-    while True:
-        try:
-            pool_2_option = int(raw_input("Select Secondary pool: "))
-            break
-        except (IndexError, ValueError):
-            print(
-                '\tERROR: Select an existing option between '
-                '0 and {0}.'.format(count))
-
-    pool_2_option = pool_list[pool_2_option]
-
-    print("\nPlease select the LUN LSS ID CODE "
-          "to be used by {0}\n"
-          "The code need to be between 00 and FF".format(pool_2_option))
-
-    while True:
-        try:
-            code_2_pool = raw_input('Digit the LSS: ')
-            int(code_2_pool, 16)
-            if len(code_2_pool) != 2:
-                print ("The code need to be between 00 and FF.")
-            else:
-                break
-        except ValueError:
-            print ("The code need to be between 00 and FF.")
-
-    print("\n* Primary pool   : {0} | LUN ID Code: {1}XX\n"
-          "* Secondary pool : {2} | LUN ID Code: {3}XX\n".format(pool_1_option,
-                                                                 code_1_pool,
-                                                                 pool_2_option,
-                                                                 code_2_pool))
-    print("\nPlease wait...")
-
-    # disk count (number of disks)
-    disk_count = disk_volume / lun_size
-    if (disk_count % 2) != 0:
-        disk_1_count = (disk_count / 2) + 1
-        disk_2_count = (disk_count / 2)
-    else:
-        disk_1_count = (disk_count / 2)
-        disk_2_count = (disk_count / 2)
-
-    # getting free IDs for LSS Primary
+    # getting free IDs
     lss_free = getid.GetID(config.dscli_bin,
                            config.dscli_profile_path + '/' + stg_sid,
                            code_1_pool)
 
     lss_1_free = lss_free.free_lss()
 
+    # primary disk
     if len(lss_1_free) < disk_count:
         print(
             "ERROR: Not exist sufficient free IDs on {0} LSS.".format(
@@ -353,14 +318,68 @@ def menu_ibm_ds8k(change=None, hostname_client=None, storage_name=None,
 
     lss_1_id_list = lss_1_free[:disk_1_count]
 
-    # getting free IDs for LSS Secondary
-    lss_free = getid.GetID(config.dscli_bin,
-                           config.dscli_profile_path + '/' + stg_sid,
-                           code_2_pool)
+    # The second pool need to be select just for more than one disk.
+    if disk_count > 1:
 
-    lss_2_free = lss_free.free_lss()
+        # Secondary Pool
+        count = 0
+        for l_pool in pool_list:
+            print ('{0}: {1}'.format(count, l_pool))
+            count += 1
 
-    lss_2_id_list = lss_2_free[:disk_2_count]
+        while True:
+            try:
+                pool_2_option = int(raw_input("Select Secondary pool: "))
+                break
+            except (IndexError, ValueError):
+                print(
+                    '\tERROR: Select an existing option between '
+                    '0 and {0}.'.format(count))
+
+        pool_2_option = pool_list[pool_2_option]
+
+        print("\nPlease select the LUN LSS ID CODE "
+              "to be used by {0}\n"
+              "The code need to be between 00 and FF".format(pool_2_option))
+
+        while True:
+            try:
+                code_2_pool = raw_input('Digit the LSS: ')
+                int(code_2_pool, 16)
+                if len(code_2_pool) != 2:
+                    print ("The code need to be between 00 and FF.")
+                else:
+                    break
+            except ValueError:
+                print ("The code need to be between 00 and FF.")
+
+        print(
+            "\n* Primary pool   : {0} | LUN ID Code: {1}XX\n"
+            "* Secondary pool : {2} | LUN ID Code: {3}XX\n".format(
+                pool_1_option, code_1_pool, pool_2_option, code_2_pool))
+
+        # getting free IDs for LSS Secondary
+        lss_free = getid.GetID(config.dscli_bin,
+                               config.dscli_profile_path + '/' + stg_sid,
+                               code_2_pool)
+
+        lss_2_free = lss_free.free_lss()
+
+        lss_2_id_list = lss_2_free[:disk_2_count]
+
+    # just one disk
+    else:
+
+        print("\n* Primary pool: {0} | LUN ID Code: {1}XX\n".format(
+            pool_1_option,
+            code_1_pool
+        ))
+
+        disk_2_count = None
+        pool_2_option = None
+        lss_2_id_list = []
+
+    print("\nPlease wait...")
 
     print ("Please give the SID (Code to identify) the LUNs.\n"
            "Use a name to identify the environment or client.\n"

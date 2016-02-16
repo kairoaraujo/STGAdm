@@ -14,7 +14,7 @@ class New:
                  pool_1_option=None, pool_2_option=None, disk_1_count=None,
                  disk_2_count=None, lss_1_id_list=None, lss_2_id_list=None,
                  disk_volume=None, lun_size=None, lun_sid=None,
-                 vol_group=None, hostname_client_stg=None):
+                 vol_group=None, hostname_client_stg=None, disk_count=None):
 
         self.change = change
         self.hostname_client = hostname_client
@@ -34,6 +34,7 @@ class New:
         self.lun_sid = lun_sid
         self.vol_group = vol_group
         self.hostname_client_stg = hostname_client_stg
+        self.disk_count = disk_count
         self.time = globalvar.timestr.replace('-', '_')
 
         self.lun_1_list = []
@@ -111,42 +112,45 @@ class New:
             reserved_ids = open(
                 '{0}/stgadm/data/reserved_ids.db'.format(config.stghome), 'w')
             for lineids in line_reservedids:
-                reserved_ids.write(lineids.replace(l_id+'\n', ''))
+                reserved_ids.write(lineids.replace(l_id + '\n', ''))
             reserved_ids.close()
 
-        for l_id in self.lss_2_id_list:
-            exec_return = ds8k.mkfbvol(self.pool_2_option, self.lun_size,
-                                       self.lun_sid,
-                                       self.vol_group, l_id)
+        if self.disk_count > 1:
+            for l_id in self.lss_2_id_list:
+                exec_return = ds8k.mkfbvol(self.pool_2_option, self.lun_size,
+                                           self.lun_sid,
+                                           self.vol_group, l_id)
 
-            file_name = '{0}/stgadm/evidences/{1}_{2}_{3}.txt'.format(
-                config.stghome, self.change, self.vol_group, self.time)
-            evidence_file = open(file_name, 'a')
+                file_name = '{0}/stgadm/evidences/{1}_{2}_{3}.txt'.format(
+                    config.stghome, self.change, self.vol_group, self.time)
+                evidence_file = open(file_name, 'a')
 
-            evidence_file.write(
-                "# Evidence\n"
-                "#\n"
-                "#\n"
-                "Return code: {0}\n"
-                "\n"
-                "Output:\n"
-                "{1}\n".format(exec_return[0], exec_return[1]))
+                evidence_file.write(
+                    "# Evidence\n"
+                    "#\n"
+                    "#\n"
+                    "Return code: {0}\n"
+                    "\n"
+                    "Output:\n"
+                    "{1}\n".format(exec_return[0], exec_return[1]))
 
-            evidence_file.close()
+                evidence_file.close()
 
-            reserved_ids = open(
-                '{0}/stgadm/data/reserved_ids.db'.format(config.stghome), 'r')
-            line_reservedids = reserved_ids.readlines()
-            reserved_ids.close()
-            reserved_ids = open(
-                '{0}/stgadm/data/reserved_ids.db'.format(config.stghome), 'w')
-            for lineids in line_reservedids:
-                reserved_ids.write(lineids.replace(l_id+'\n', ''))
-            reserved_ids.close()
-
+                reserved_ids = open(
+                    '{0}/stgadm/data/reserved_ids.db'.format(config.stghome),
+                    'r')
+                line_reservedids = reserved_ids.readlines()
+                reserved_ids.close()
+                reserved_ids = open(
+                    '{0}/stgadm/data/reserved_ids.db'.format(config.stghome),
+                    'w')
+                for lineids in line_reservedids:
+                    reserved_ids.write(lineids.replace(l_id + '\n', ''))
+                reserved_ids.close()
 
         evidence_file = open(file_name, 'a')
-        evidence_file.write(ds8k.lsfbvol('-volgrp {0}'.format(self.vol_group[1])))
+        evidence_file.write(
+            ds8k.lsfbvol('-volgrp {0}'.format(self.vol_group))[1])
         evidence_file.close()
 
         return file_name
@@ -199,27 +203,28 @@ class New:
             "lun_sid = '{15}'\n"
             "vol_group = '{16}'\n"
             "hostname_client_stg = '{17}'\n"
-            "time = '{18}'\n"
+            "disk_count = {18}"
+            "time = '{19}'\n"
 
             "\n"
             "\n"
-            "{0}_{7}_{17}_{18} = ds8k_add_dev.New(\n"
+            "{0}_{7}_{17}_{19} = ds8k_add_dev.New(\n"
             "               change, hostname_client, storage_name,\n"
             "               wwn_client, stg_name, stg_type, stg_sid,\n"
             "               pool_1_option, pool_2_option, disk_1_count,\n"
             "               disk_2_count, lss_1_id_list, lss_2_id_list,\n"
             "               disk_volume, lun_size, lun_sid,\n"
-            "               vol_group, hostname_client_stg)\n"
+            "               vol_group, hostname_client_stg, disk_count)\n"
             "\n"
             "def preview():\n"
             "    \n"
-            "    {0}_{7}_{17}_{18}.preview()\n"
+            "    {0}_{7}_{17}_{19}.preview()\n"
             "    \n"
             "    \n"
             "def execute():\n"
             "    \n"
             "    \n"
-            "    evidence = {0}_{7}_{17}_{18}.execute()\n"
+            "    evidence = {0}_{7}_{17}_{19}.execute()\n"
             "    print('\\nChange executed!')\n"
             "    evidence_file=open(evidence)\n"
             "    print(evidence_file.read())\n"
@@ -246,7 +251,8 @@ class New:
                 self.lun_sid,  # 15
                 self.vol_group,  # 16
                 self.hostname_client_stg,  # 17
-                self.time))  # 18
+                self.disk_count,  # 18
+                self.time))  # 19
 
     def closechange(self):
         """ Close the file and move to correct directory """
