@@ -46,9 +46,21 @@ An interactive menu will be appear. Have fun!
 Screenshots
 -----------
 
+- Creating the change/ticket/wo
+
 .. image:: images/ss1.png
 
+.. image:: images/ss-ds8k-1.png
 
+.. image:: images/ss-ds8k-2.png
     
-    
-    
+.. image:: images/ss-ds8k-3.png
+
+
+- Executing the change/ticket/wo
+
+.. image:: images/ss-ds8k-4.png
+
+.. image:: images/ss-ds8k-5.png
+
+.. image:: images/ss-ds8k-6.png
