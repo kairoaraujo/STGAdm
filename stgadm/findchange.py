@@ -11,7 +11,7 @@ import config
 def select():
     """ Select the change/ticket file. """
     print ("\n[Change/Ticket/WO Execution]\n"
-           "\nSelect the Change/Ticket to execute:\n")
+           "\nSelect the Change/Ticket/WO to execute:\n")
     listchanges = fnmatch.filter(
         os.listdir("{0}/stgadm/changes/".format(config.stghome)), "change*.py")
     listchanges_length = len(listchanges) - 1
