@@ -161,10 +161,12 @@ class New:
         global file_change
 
         file_change = open(
-            '{0}/stgadm/tmp/change_{1}_{2}_{3}.py'.format(config.stghome,
-                                                          self.change,
-                                                          self.vol_group,
-                                                          self.time), 'w')
+            '{0}/stgadm/tmp/change_{1}_{2}_{3}_{4}.py'.format(
+                config.stghome,
+                self.change,
+                self.hostname_client_stg,
+                self.vol_group,
+                self.time), 'w')
 
         file_change.write(
             '#!/usr/bin/env python\n'
@@ -260,11 +262,19 @@ class New:
         file_change.write('\n# File closed with success by STGAdm.\n')
         file_change.close()
 
-        orig_change = '{0}/stgadm/tmp/change_{1}_{2}_{3}.py'.format(
-            config.stghome, self.change, self.vol_group, self.time)
+        orig_change = '{0}/stgadm/tmp/change_{1}_{2}_{3}_{4}.py'.format(
+            config.stghome,
+            self.change,
+            self.hostname_client_stg,
+            self.vol_group,
+            self.time)
 
-        dest_change = '{0}/stgadm/changes/change_{1}_{2}_{3}.py'.format(
-            config.stghome, self.change, self.vol_group, self.time)
+        dest_change = '{0}/stgadm/changes/change_{1}_{2}_{3}_{4}.py'.format(
+            config.stghome,
+            self.change,
+            self.hostname_client_stg,
+            self.vol_group,
+            self.time)
 
         os.rename(orig_change, dest_change)
 
