@@ -418,7 +418,7 @@ def menu_ibm_ds8k(change=None, hostname_client=None, storage_name=None,
 def main_menu():
     global disk_volume, lun_size, execute_change
 
-    def _move_change():
+    def _move_change(change_file):
 
         orig_change = '{0}/stgadm/changes/{1}.py'.format(
             config.stghome, change_file)
@@ -426,6 +426,20 @@ def main_menu():
                 config.stghome, change_file)
 
         os.rename(orig_change, dest_change)
+
+    def _clear_reserved_ids(lss_id_list):
+        for l_id in lss_id_list:
+            reserved_ids = open(
+                '{0}/stgadm/data/reserved_ids.db'.format(
+                    config.stghome),'r')
+            line_reservedids = reserved_ids.readlines()
+            reserved_ids.close()
+            reserved_ids = open(
+                '{0}/stgadm/data/reserved_ids.db'.format(
+                    config.stghome), 'w')
+            for lineids in line_reservedids:
+                reserved_ids.write(lineids.replace(l_id + '\n', ''))
+            reserved_ids.close()
 
     os.system('clear')
     print('')
@@ -526,8 +540,14 @@ def main_menu():
             'stgadm.changes.{0}'.format(change_file))
         try:
             change_module.preview()
+
         except ValueError:
-            _move_change()
+
+            _clear_reserved_ids(change_module.lss_1_id_list)
+            _clear_reserved_ids(change_module.lss_2_id_list)
+
+            _move_change(change_file)
+
             exit()
 
         execute_change = fields.YesNo('Do you would like execute this '
@@ -545,7 +565,7 @@ def main_menu():
             except ValueError, e:
                 print "ERROR: {}".format(e)
 
-            _move_change()
+            _move_change(change_file)
 
     else:
         print 'Wrong option. Exiting.'
