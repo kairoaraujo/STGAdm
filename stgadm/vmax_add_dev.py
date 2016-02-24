@@ -36,14 +36,14 @@ class New:
 
     def preview(self):
         print('\nConfig validation\n')
-        print('\nClient Information')
-        print(50 * '-')
+        print('\033[1;34m\nClient Information:\033[1;00m')
+        print(90 * '-')
         print('Register      : {0}'.format(self.change))
         print('Client Server : {0}'.format(self.hostname_client))
         print('Storage Name  : {0}'.format(self.storage_name))
         print('WWN Client    : {0}'.format(self.wwn_client))
-        print('\nStorage Information')
-        print(50 * '-')
+        print('\033[1;34m\nStorage Information:\033[1;00m')
+        print(90 * '-')
         print('Storage Name          : {0}'.format(self.stg_name))
         print('Storage Type          : {0}'.format(self.stg_type))
         print('Storage SID           : {0}'.format(self.stg_sid))
@@ -51,15 +51,14 @@ class New:
         print('Making View Names     : {0}'.format(self.mvn))
         print('Storage Group Name    : {0}'.format(self.sgn))
         print('Storage Pool          : {0}'.format(self.stg_pool))
-        print('\nInformations about the request:')
-        print(50 * '-')
+        print('\033[1;34m\nInformations about the request:\033[1;00m')
+        print(90 * '-')
         print('Disk Volume   : {0}GB'.format(self.disk_volume))
         print('LUN Size      : {0}GB'.format(self.lun_size))
         print('Device type   : {0}'.format(self.lun_type))
         if self.lun_type == 'meta':
             print('Member Size   : {0}GB (meta)'.format(self.member_meta_size))
         print('Disk Count    : {0}'.format(self.disk_count))
-        print(50 * '-')
         print('\n')
 
         print('Executing prepare mode to check. Please wait...\n')
@@ -78,6 +77,7 @@ class New:
 
         if exec_return[0] != 0:
             print('\n** ERROR Code: {0} **\n'.format(exec_return[0]))
+            exit()
         else:
             print('\n** Return Code: {0} **\n'.format(exec_return[0]))
 
@@ -133,10 +133,6 @@ class New:
 
     def writechange(self):
         """ Write the body of file. """
-
-        #
-        # config functions to write correct action to lpar
-        #
 
         file_change.write(
             "\n"

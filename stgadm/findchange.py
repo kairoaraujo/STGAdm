@@ -10,8 +10,8 @@ import config
 
 def select():
     """ Select the change/ticket file. """
-    print ("\n[LPAR creation]\n"
-           "\nSelect the Change/Ticket to execute:\n")
+    print ("\n[Change/Ticket/WO Execution]\n"
+           "\nSelect the Change/Ticket/WO to execute:\n")
     listchanges = fnmatch.filter(
         os.listdir("{0}/stgadm/changes/".format(config.stghome)), "change*.py")
     listchanges_length = len(listchanges) - 1
@@ -29,7 +29,7 @@ def select():
                 raw_input("\nWhat's change/ticket id you want execute?: "))
             change_exec = (listchanges[change_option])
             break
-        except IndexError:
+        except (IndexError, ValueError):
             print(
                 '\tERROR: Select an existing option between 0 and {0}.'.format(
                     listchanges_length))
