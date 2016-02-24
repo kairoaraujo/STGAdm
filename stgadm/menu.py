@@ -128,11 +128,17 @@ def menu_emc_vmax(change=None, hostname_client=None, storage_name=None,
 
     def choose_device_type():
         print('Select the type of device you want create:\n')
-        print('0. Meta device')
-        print('1. Regular device')
+        print('0. Regular device')
+        print('1. Meta device')
         device_type = raw_input('\nChoose an option: ')
 
         if device_type == '0':
+
+            device_type = 'regular'
+            member_size = 0
+            return member_size, device_type
+
+        elif device_type == '1':
 
             device_type = 'meta'
 
@@ -158,12 +164,6 @@ def menu_emc_vmax(change=None, hostname_client=None, storage_name=None,
                     print(
                         '\tERROR: Total Disk need to be an int value in GB.'
                         '\nDo not use GB. Example: 1000 for 1000GB (1TB)')
-
-        elif device_type == '1':
-
-            device_type = 'regular'
-            member_size = 0
-            return member_size, device_type
 
         else:
             print('ERRO: Wrong option.')
@@ -537,9 +537,13 @@ def main_menu():
         if execute_change == 'y':
             print "Executing the change. Please wait...\n"
 
-            os.system('python -c \"import stgadm.changes.{0}; '
-                      'stgadm.changes.{0}.execute()\"'
-                      .format(change_file))
+            # import change_file
+            change_module = importlib.import_module(
+                'stgadm.changes.{0}'.format(change_file))
+            try:
+                change_module.execute()
+            except ValueError, e:
+                print "ERROR: {}".format(e)
 
             _move_change()
 
