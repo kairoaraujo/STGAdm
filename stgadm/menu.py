@@ -12,6 +12,7 @@ import vmax_add_dev
 import ds8k_add_dev
 import findchange
 import getid
+import importlib
 
 
 def menu_emc_vmax(change=None, hostname_client=None, storage_name=None,
@@ -415,7 +416,16 @@ def menu_ibm_ds8k(change=None, hostname_client=None, storage_name=None,
 
 
 def main_menu():
-    global disk_volume, lun_size
+    global disk_volume, lun_size, execute_change
+
+    def _move_change():
+
+        orig_change = '{0}/stgadm/changes/{1}.py'.format(
+            config.stghome, change_file)
+        dest_change = '{0}/stgadm/changes_executed/{1}.py'.format(
+                config.stghome, change_file)
+
+        os.rename(orig_change, dest_change)
 
     os.system('clear')
     print('')
@@ -510,9 +520,15 @@ def main_menu():
     elif stgadm == '2':
 
         change_file = findchange.select().replace('.py', '')
-        os.system('python -c \"import stgadm.changes.{0}; '
-                  'stgadm.changes.{0}.preview()\"'
-                  .format(change_file))
+
+        # import change_file
+        change_module = importlib.import_module(
+            'stgadm.changes.{0}'.format(change_file))
+        try:
+            change_module.preview()
+        except ValueError:
+            _move_change()
+            exit()
 
         execute_change = fields.YesNo('Do you would like execute this '
                                       'change?[y/n]: ', 'n')
@@ -525,12 +541,7 @@ def main_menu():
                       'stgadm.changes.{0}.execute()\"'
                       .format(change_file))
 
-            orig_change = '{0}/stgadm/changes/{1}.py'.format(config.stghome,
-                                                             change_file)
-            dest_change = '{0}/stgadm/changes_executed/{1}.py'.format(
-                config.stghome, change_file)
-
-            os.rename(orig_change, dest_change)
+            _move_change()
 
     else:
         print 'Wrong option. Exiting.'

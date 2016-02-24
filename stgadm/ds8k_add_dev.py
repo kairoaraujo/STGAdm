@@ -45,6 +45,22 @@ class New:
         for l_lun in self.lss_2_id_list:
             self.lun_2_list.append('{0}_{1}'.format(self.lun_sid, l_lun))
 
+        self.ds8k = pystorage.DS8K(config.dscli_bin,
+                                   config.dscli_profile_path + '/' +
+                                   self.stg_sid)
+
+    def _lun_availability(self, lun_list):
+        return_msg_free = 'CMUC00234I lsfbvol: No FB Volume found.'
+
+        for lun in lun_list:
+            if self.ds8k.lsfbvol(lun)[1].split('\n')[1] == return_msg_free:
+                print ("LUN {0} is available to create.".format(lun))
+
+            else:
+                print ("ERROR: LUN {0} is not longer available.".format(lun))
+                print ("       This change is automatically canceled!")
+                raise ValueError("InvalidLUNId")
+
     def preview(self):
         print('\nConfig validation\n')
         print('\033[1;34m\nClient Information:\033[1;00m')
@@ -75,20 +91,30 @@ class New:
             self.disk_1_count + self.disk_2_count))
         print('\n')
 
-        print('Executing prepare mode to check. Please wait...\n')
+        print('Checking LUNs availability...')
+        print('Please wait the finish message.\n')
+
+        try:
+            self._lun_availability(self.lss_1_id_list)
+        except ValueError, e:
+            raise ValueError(e)
+
+        if len(self.lss_2_id_list) > 0:
+            try:
+                self._lun_availability(self.lss_2_id_list)
+            except ValueError, e:
+                raise ValueError(e)
+
+        print ('\nLUN availability finished.\n')
 
     def execute(self):
 
         global exec_return, file_name
 
-        ds8k = pystorage.DS8K(config.dscli_bin,
-                              config.dscli_profile_path + '/' +
-                              self.stg_sid)
-
         for l_id in self.lss_1_id_list:
-            exec_return = ds8k.mkfbvol(self.pool_1_option, self.lun_size,
-                                       self.lun_sid,
-                                       self.vol_group, l_id)
+            exec_return = self.ds8k.mkfbvol(self.pool_1_option, self.lun_size,
+                                            self.lun_sid,
+                                            self.vol_group, l_id)
 
             file_name = '{0}/stgadm/evidences/{1}_{2}_{3}.txt'.format(
                 config.stghome, self.change, self.vol_group, self.time)
@@ -117,9 +143,10 @@ class New:
 
         if self.disk_count > 1:
             for l_id in self.lss_2_id_list:
-                exec_return = ds8k.mkfbvol(self.pool_2_option, self.lun_size,
-                                           self.lun_sid,
-                                           self.vol_group, l_id)
+                exec_return = self.ds8k.mkfbvol(self.pool_2_option,
+                                                self.lun_size,
+                                                self.lun_sid,
+                                                self.vol_group, l_id)
 
                 file_name = '{0}/stgadm/evidences/{1}_{2}_{3}.txt'.format(
                     config.stghome, self.change, self.vol_group, self.time)
@@ -150,7 +177,7 @@ class New:
 
         evidence_file = open(file_name, 'a')
         evidence_file.write(
-            ds8k.lsfbvol('-volgrp {0}'.format(self.vol_group))[1])
+            self.ds8k.lsfbvol('-volgrp {0}'.format(self.vol_group))[1])
         evidence_file.close()
 
         return file_name
