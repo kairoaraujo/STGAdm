@@ -77,6 +77,7 @@ class New:
 
         if exec_return[0] != 0:
             print('\n** ERROR Code: {0} **\n'.format(exec_return[0]))
+            exit()
         else:
             print('\n** Return Code: {0} **\n'.format(exec_return[0]))
 
