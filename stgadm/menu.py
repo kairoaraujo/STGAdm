@@ -214,20 +214,66 @@ def menu_ibm_ds8k(change=None, hostname_client=None, storage_name=None,
     ds8k = pystorage.IBM.DS8K(config.dscli_bin,
                               config.dscli_profile_path + '/' + stg_sid)
 
+    def _get_stg_host_info(subtitle, wwn):
+
+        volume_group = ds8k.get_volgrpid(wwn)
+        hostname_client_storage = ds8k.get_hostname(wwn)
+
+        if (volume_group[0] != 0) or hostname_client_storage[0] != 0:
+            print "{0} - {1}".format(volume_group[1],
+                                     hostname_client_storage[1])
+            exit(1)
+        else:
+            print('{0}Client informations:'.format(subtitle))
+            print('Volume Group from \033[1;32m{0}\033[1;00m identified '
+                  'as \033[1;32m{1}\033[1;00m.'.format(
+                wwn_client, volume_group[1]))
+            print('Hostname used on storage is '
+                  '\033[1;32m{0}\033[1;00m\n'.format(hostname_client_storage[1]))
+
+        return hostname_client_storage, volume_group
+
     print('\nGetting the Volume Group and hostname used on storage ...'
           '\n\nPlease wait...')
 
-    vol_group = ds8k.get_volgrpid(wwn_client)
-    hostname_client_stg = ds8k.get_hostname(wwn_client)
+    hostname_client_stg, vol_group = _get_stg_host_info('', wwn_client)
 
-    if (vol_group[0] != 0) or hostname_client_stg[0] != 0:
-        print "{0} - {1}".format(vol_group[1], hostname_client_stg[1])
-        exit(1)
-    else:
-        print('\nVolume Group from \033[1;32m{0}\033[1;00m identified '
-              'as \033[1;32m{1}\033[1;00m.'.format(wwn_client, vol_group[1]))
-        print('Hostname used on storage is '
-              '\033[1;32m{0}\033[1;00m'.format(hostname_client_stg[1]))
+    # get cluster node information.
+    cls = fields.YesNo('Is it a CLUSTER provisioning? [y/n]: ', 'n')
+    cls = cls.check()
+
+    cls_nodes = {}
+
+    if cls == 'y':
+
+        count_node = 0
+        check_new_cls_node = True
+        while check_new_cls_node is True:
+            cls_wwn_client = fields.Fields(
+                'cls_wwn_client',
+                '\n(Cluster) Insert the WWN Server Client: ')
+            cls_wwn_client.chkfieldstr()
+            cls_wwn_client = cls_wwn_client.strvarout()
+            print('\nPlease wait.. ')
+
+            cls_node_info = _get_stg_host_info('[Cluster Node] ',
+                                               cls_wwn_client)
+            cls_nodes.update({count_node: [cls_node_info[0][1],
+                                           cls_node_info[1][1],
+                                           cls_wwn_client]})
+
+            count_node += 1
+
+            new_cls = fields.YesNo(
+                'Do you want add another cluster host? [y/n]: ',
+                'n'
+            )
+            new_cls = new_cls.check()
+
+            if new_cls is 'y':
+                check_new_cls_node = True
+            else:
+                check_new_cls_node = False
 
     # select first and second pool
 
@@ -279,7 +325,7 @@ def menu_ibm_ds8k(change=None, hostname_client=None, storage_name=None,
             break
         except (IndexError, ValueError):
             print(
-                '\tERROR: Select an existing option between'
+                '\tERROR: Select an existing option between '
                 '0 and {0}.'.format(count))
 
     pool_1_option = pool_list[pool_1_option]
@@ -397,7 +443,8 @@ def menu_ibm_ds8k(change=None, hostname_client=None, storage_name=None,
                                   pool_1_option, pool_2_option, disk_1_count,
                                   disk_2_count, lss_1_id_list, lss_2_id_list,
                                   disk_volume, lun_size, lun_sid,
-                                  vol_group[1], hostname_client_stg[1])
+                                  vol_group[1], hostname_client_stg[1],
+                                  disk_count, cls, cls_nodes)
     new_change.preview()
 
     save_config = fields.YesNo('Do you would like save this allocation?[y/n]: ',
@@ -418,12 +465,12 @@ def menu_ibm_ds8k(change=None, hostname_client=None, storage_name=None,
 def main_menu():
     global disk_volume, lun_size, execute_change
 
-    def _move_change(change_file):
+    def _move_change(change_file_name):
 
         orig_change = '{0}/stgadm/changes/{1}.py'.format(
-            config.stghome, change_file)
+            config.stghome, change_file_name)
         dest_change = '{0}/stgadm/changes_executed/{1}.py'.format(
-                config.stghome, change_file)
+            config.stghome, change_file_name)
 
         os.rename(orig_change, dest_change)
 
@@ -431,7 +478,7 @@ def main_menu():
         for l_id in lss_id_list:
             reserved_ids = open(
                 '{0}/stgadm/data/reserved_ids.db'.format(
-                    config.stghome),'r')
+                    config.stghome), 'r')
             line_reservedids = reserved_ids.readlines()
             reserved_ids.close()
             reserved_ids = open(
