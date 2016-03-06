@@ -9,21 +9,24 @@ Support IBM DS8000 (DS8K) and EMC VMAX. (check Version for more informations)
 Version
 -------
 
-- Release 0.2-beta
+-  0.3-beta
 
-    * Working for add new devices for existent host client on IBM DS8K
+   - Added support for cluster provisioning on IBM DS8K
 
-- Release 0.1-beta
+-  0.2-beta
 
-    * Initial release
-    * Working for add new devices for existent host client on EMC VMAX (1 & 2)
+   - Working for add new devices for existent host client on IBM DS8K
 
+-  0.1-beta
+
+   - Working for add new devices for existent host client on EMC VMAX (1 & 2)
+   - Initial release
 
     
 Installation / Configuration / Using
 ------------------------------------
 
-- Pre-requirement
+- Requirement
 
     $ pip install PyStorage
 
