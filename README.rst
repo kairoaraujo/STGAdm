@@ -9,15 +9,15 @@ Support IBM DS8000 (DS8K) and EMC VMAX. (check Version for more informations)
 Version
 -------
 
--  0.4.3-beta
+-  0.3.0
 
    - Added support for cluster provisioning on IBM DS8K
 
--  0.4.2-beta
+-  0.2.0
 
    - Working for add new devices for existent host client on IBM DS8K
 
--  0.4.0-beta
+-  0.1.0
 
    - Working for add new devices for existent host client on EMC VMAX (1 & 2)
    - Initial release
