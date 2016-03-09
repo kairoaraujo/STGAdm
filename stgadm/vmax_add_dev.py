@@ -6,6 +6,7 @@ import config
 import globalvar
 import pystorage
 import os
+import time
 
 
 class New:
@@ -76,6 +77,7 @@ class New:
         print(exec_return[1])
 
         if exec_return[0] != 0:
+            print exec_return[2]
             print('\n** ERROR Code: {0} **\n'.format(exec_return[0]))
             exit()
         else:
@@ -93,6 +95,26 @@ class New:
                                              self.sgn,
                                              self.action)
 
+        # check if EMC VMAX database was in lock
+        if exec_return[0] == 2:
+            exec_count = 2
+            while exec_count <= 3:
+                print("\nINFO: EMC VMAX {0} Database Locked.\n"
+                      "New tentative in 1 minute. Please Wait...\n"
+                      "Tentative: {1}".format(self.stg_sid, exec_count))
+                time.sleep(60)
+                exec_return = exec_change.create_dev(self.stg_sid,
+                                                     self.disk_count,
+                                                     self.lun_size,
+                                                     self.member_meta_size,
+                                                     self.lun_type,
+                                                     self.stg_pool,
+                                                     self.sgn,
+                                                     self.action)
+                if exec_return[0] != 2:
+                    break
+                exec_count += 1
+
         file_name = '{0}/stgadm/evidences/{1}_{2}_{3}.txt'.format(
             config.stghome, self.change, self.ign, self.time)
         evidence_file = open(file_name, 'w')
@@ -106,6 +128,9 @@ class New:
             "Output:\n"
             "{1}\n".format(exec_return[0], exec_return[1])
         )
+
+        if exec_return[0] != 0:
+            evidence_file.write(exec_return[2])
 
         evidence_file.close()
 
