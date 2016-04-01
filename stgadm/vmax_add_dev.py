@@ -129,6 +129,18 @@ class New:
             "{1}\n".format(exec_return[0], exec_return[1])
         )
 
+        exec_return = exec_change.mvn(self.stg_pool, self.sgn)
+
+        evidence_file.write(
+            "\n"
+            "# Show View Mask View Name {0}\n"
+            "\n"
+            "Return code: {1}\n"
+            "\n"
+            "Output:\n"
+            "{2}".format(self.mvn, exec_return[0], exec_return[1])
+        )
+
         if exec_return[0] != 0:
             evidence_file.write(exec_return[2])
 
