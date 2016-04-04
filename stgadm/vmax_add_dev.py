@@ -129,7 +129,7 @@ class New:
             "{1}\n".format(exec_return[0], exec_return[1])
         )
 
-        exec_return = exec_change.mvn(self.stg_pool, self.sgn)
+        exec_return = exec_change.sgn(self.stg_sid, self.mvn)
 
         evidence_file.write(
             "\n"
