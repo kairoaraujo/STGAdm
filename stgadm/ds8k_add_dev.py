@@ -41,11 +41,11 @@ class New:
 
         self.lun_1_list = []
         for l_lun in self.lss_1_id_list:
-            self.lun_1_list.append('{0}_{1}'.format(self.lun_sid, l_lun))
+            self.lun_1_list.append('{0}_LUN_{1}'.format(self.lun_sid, l_lun))
 
         self.lun_2_list = []
         for l_lun in self.lss_2_id_list:
-            self.lun_2_list.append('{0}_{1}'.format(self.lun_sid, l_lun))
+            self.lun_2_list.append('{0}_LUN_{1}'.format(self.lun_sid, l_lun))
 
         self.ds8k = pystorage.DS8K(config.dscli_bin,
                                    config.dscli_profile_path + '/' +
@@ -184,7 +184,7 @@ class New:
 
         for l_id in self.lss_1_id_list:
             exec_return = self.ds8k.mkfbvol(self.pool_1_option, self.lun_size,
-                                            self.lun_sid,
+                                            '{0}_LUN'.format(self.lun_sid),
                                             self.vol_group, l_id)
 
             _write_evidence(exec_return, evidence_file_name)
