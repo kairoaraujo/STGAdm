@@ -1,3 +1,6 @@
 *.pyc
-stgadm/data_tests/*
 *.idea
+stgadm/data_tests/*
+stgadm/tmp/change*
+stgadm/data/vnx_reserved_hlu_*
+

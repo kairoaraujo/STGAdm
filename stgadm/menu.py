@@ -9,6 +9,7 @@ import config
 import fields
 import pystorage
 import vmax_add_dev
+import vnx_add_dev
 import ds8k_add_dev
 import findchange
 import getid
@@ -198,6 +199,192 @@ def menu_emc_vmax(change=None, hostname_client=None, storage_name=None,
         print('Finishing. Thank you.')
 
 
+def menu_emc_vnx(change=None, hostname_client=None, storage_name=None,
+                 stg_name=None, stg_type=None, stg_1ip=None, stg_2ip=None,
+                 stg_user=None, stg_pass=None, stg_scope=None, wwn_client=None):
+
+    global pool_option, pool
+
+    if not os.path.isfile(config.naviseccli_bin):
+        print ("\nERROR: NAVISECCLI not found. Check config file item "
+               "naviseccli_bin.")
+        exit()
+
+    disk_count = disk_volume / lun_size
+
+    vnx = pystorage.EMC.VNX(config.naviseccli_bin, stg_1ip, stg_2ip, stg_user,
+                            stg_pass, stg_scope)
+
+    def _get_stg_host_info(subtitle, wwn):
+
+        hostname_client_stg = vnx.get_hostname(wwn)
+        stg_group = vnx.get_stggroup(wwn)
+
+        if (stg_group[0] != 0) or (hostname_client_stg[0] != 0):
+            print "{0} - {1}".format(stg_group,
+                                     hostname_client_stg)
+            exit(1)
+        else:
+            print('{0}Client informations:'.format(subtitle))
+            print(
+                'Storage Group Name used by \033[1;32m{0}\033[1;00m '
+                'identified as \033[1;32m{1}\033[1;00m.'.format(
+                    wwn, stg_group[1]))
+            print(
+                'Hostname used on storage is '
+                '\033[1;32m{0}\033[1;00m\n'.format(
+                    hostname_client_stg[1]))
+
+        return hostname_client_stg[1], stg_group[1]
+
+    print('\nGetting the hostname used on storage and Storage Group Name ...'
+          '\n\nPlease wait...')
+
+    # getting pool
+    pools = vnx.pool_list()
+
+    if pools[0] != 0:
+        print ("ERROR: {0}".format(pools[1]))
+        exit(pools[0])
+
+    else:
+        if len(pools[1]) > 1:
+
+            print('\nMultiples Pools detected. Please choose a Pool.\n')
+            count = 0
+            for l_pools in pools[1]:
+                print ('{0}: {1}'.format(count, l_pools))
+                count += 1
+
+            while True:
+                try:
+                    pool_option = int(raw_input("Select the Pool: "))
+                    break
+                except (IndexError, ValueError):
+                    print('\tERROR: Select an existing option between'
+                          '0 and {0}.'.format(count))
+
+            pool = pools[1][pool_option]
+
+        else:
+            pool = pools[1][0]
+
+    hostname_client_storage, stggroup_name = _get_stg_host_info('', wwn_client)
+
+    # get cluster node information.
+    cls = fields.YesNo('Is it a CLUSTER provisioning? [y/n]: ', 'n')
+    cls = cls.check()
+
+    cls_nodes = {}
+
+    if cls == 'y':
+
+        count_node = 0
+        check_new_cls_node = True
+        while check_new_cls_node is True:
+            cls_wwn_client = fields.Fields(
+                'cls_wwn_client',
+                '\n(Cluster) Insert the WWN Server Client: ')
+            cls_wwn_client.chkfieldstr()
+            cls_wwn_client = cls_wwn_client.strvarout()
+            print('\nPlease wait.. ')
+
+            cls_node_info = _get_stg_host_info('[Cluster Node] ',
+                                               cls_wwn_client)
+
+            # hlu id for cluster node
+
+            node_hlu_free = getid.VNX(config.naviseccli_bin, stg_1ip,
+                                      stg_user, stg_pass, stg_scope,
+                                      pool)
+
+            node_hlu_free_ids = node_hlu_free.free_hlu(cls_node_info[1])
+
+            if len(node_hlu_free_ids) < disk_count:
+                print("ERROR: Not exist sufficient HLU free IDs "
+                      "on {0} Storage Group.".format(cls_node_info[1]))
+                exit()
+
+            node_hlu_ids = node_hlu_free_ids[:disk_count]
+
+            cls_nodes.update({count_node: [cls_node_info[0],
+                                           cls_node_info[1],
+                                           cls_wwn_client,
+                                           node_hlu_ids]})
+
+            count_node += 1
+
+            new_cls = fields.YesNo(
+                'Do you want add another cluster host? [y/n]: ',
+                'n'
+            )
+            new_cls = new_cls.check()
+
+            if new_cls is 'y':
+                check_new_cls_node = True
+            else:
+                check_new_cls_node = False
+
+
+    print ("Please give the TAG/SID (Code to identify) the LUNs.\n"
+           "Use a name to identify the environment or client.\n"
+           "Examples: DEV or MIGRATION or FOOBAR\n\n"
+           "With this code the LUNs will be create as TAG/SID_LUN_SSL:\n"
+           "Example: DEV_LUN_1 or MIGRATION_LUN_7 or FOOBAR_LUN_45\n")
+
+    lun_sid = fields.Fields('lun_sid', 'LUN SID(TAG): ')
+    lun_sid.chkfieldstr()
+    lun_sid = lun_sid.strvarout()
+
+    # lu id
+
+    lu_free = getid.VNX(config.naviseccli_bin, stg_1ip, stg_user, stg_pass,
+                        stg_scope, pool)
+    lu_free_ids = lu_free.free_lu()
+
+    if len(lu_free_ids) < disk_count:
+        print("ERROR: Not exist sufficient free IDs on {0} pool.".format(
+              pool))
+        exit()
+
+    lu_ids = lu_free_ids[:disk_count]
+
+    # hlu id
+    hlu_free = getid.VNX(config.naviseccli_bin, stg_1ip, stg_user, stg_pass,
+                         stg_scope, pool)
+    hlu_free_ids = hlu_free.free_hlu(stggroup_name)
+
+    if len(hlu_free_ids) < disk_count:
+        print("ERROR: Not exist sufficient HLU free IDs "
+              "on {0} Storage Group.".format(stggroup_name))
+        exit()
+
+    hlu_ids = hlu_free_ids[:disk_count]
+
+    new_change = vnx_add_dev.New(change, hostname_client, storage_name,
+                                 wwn_client, stg_name, stg_type, stg_1ip,
+                                 stg_2ip, stg_user, stg_pass, stg_scope,
+                                 pool, disk_count, lu_ids, hlu_ids, disk_volume,
+                                 lun_size, lun_sid, hostname_client_storage,
+                                 stggroup_name, config.lun_type_create,
+                                 cls, cls_nodes)
+    new_change.preview()
+
+    save_config = fields.YesNo('Do you would like save this allocation?[y/n]: ',
+                               'n')
+    save_config = save_config.check()
+
+    if save_config == 'y':
+
+        new_change.headerchange()
+        new_change.writechange()
+        end_change = new_change.closechange()
+        print end_change
+
+    else:
+        print('Finishing. Thank you.')
+
+
 def menu_ibm_ds8k(change=None, hostname_client=None, storage_name=None,
                   stg_name=None, stg_type=None, stg_sid=None, wwn_client=None):
     global pool_1_option, pool_2_option, code_1_pool, code_2_pool
@@ -353,9 +540,9 @@ def menu_ibm_ds8k(change=None, hostname_client=None, storage_name=None,
         pool_1_option, code_1_pool))
 
     # getting free IDs
-    lss_free = getid.GetID(config.dscli_bin,
-                           config.dscli_profile_path + '/' + stg_sid,
-                           code_1_pool)
+    lss_free = getid.DS8K(config.dscli_bin,
+                          config.dscli_profile_path + '/' + stg_sid,
+                          code_1_pool)
 
     lss_1_free = lss_free.free_lss()
 
@@ -409,9 +596,9 @@ def menu_ibm_ds8k(change=None, hostname_client=None, storage_name=None,
                 pool_1_option, code_1_pool, pool_2_option, code_2_pool))
 
         # getting free IDs for LSS Secondary
-        lss_free = getid.GetID(config.dscli_bin,
-                               config.dscli_profile_path + '/' + stg_sid,
-                               code_2_pool)
+        lss_free = getid.DS8K(config.dscli_bin,
+                              config.dscli_profile_path + '/' + stg_sid,
+                              code_2_pool)
 
         lss_2_free = lss_free.free_lss()
 
@@ -468,7 +655,16 @@ def menu_ibm_ds8k(change=None, hostname_client=None, storage_name=None,
 def main_menu():
     global disk_volume, lun_size, execute_change
 
-    def _move_change(change_file_name):
+    def _cancel_change(change_file_name):
+
+        orig_change = '{0}/stgadm/changes/{1}.py'.format(
+            config.stghome, change_file_name)
+        dest_change = '{0}/stgadm/changes_canceled/{1}.py'.format(
+            config.stghome, change_file_name)
+
+        os.rename(orig_change, dest_change)
+
+    def _finish_change(change_file_name):
 
         orig_change = '{0}/stgadm/changes/{1}.py'.format(
             config.stghome, change_file_name)
@@ -561,7 +757,16 @@ def main_menu():
                           stg_type, stg_sid, wwn_client)
 
         elif stg_type == 'EMC_VNX':
-            pass
+            storage_name = get_stg.getstorage()
+            stg_1ip = get_stg.getvnx_1ip()
+            stg_2ip = get_stg.getvnx_2ip()
+            stg_user = get_stg.getvnx_user()
+            stg_pass = get_stg.getvnx_pass()
+            stg_scope = get_stg.getvnx_scope()
+
+            menu_emc_vnx(change, hostname_client, storage_name, storage_name,
+                         stg_type, stg_1ip, stg_2ip, stg_user, stg_pass,
+                         stg_scope, wwn_client)
 
         else:
             print('ERROR: Storage type {0} invalid. Check config file'.format(
@@ -579,12 +784,35 @@ def main_menu():
 
         except ValueError:
 
-            for l_1_id in change_module.lss_1_id_list:
-                ds8k_add_dev.remove_reserved_id(l_1_id)
-            for l_2_id in change_module.lss_2_id_list:
-                ds8k_add_dev.remove_reserved_id(l_2_id)
+            if change_module.stg_type == 'IBM_DS8K':
+                print('Removing LUN ID reserve...')
+                for l_1_id in change_module.lss_1_id_list:
+                    ds8k_add_dev.remove_reserved_id(l_1_id)
+                for l_2_id in change_module.lss_2_id_list:
+                    ds8k_add_dev.remove_reserved_id(l_2_id)
+                print('LUN ID cleanup finished.')
 
-            _move_change(change_file)
+            elif change_module.stg_type == 'EMC_VNX':
+                print('Removing LUN ID reserve...')
+                # remove lu:
+                for lu_id in change_module.lu_ids:
+                    vnx_add_dev.remove_reserved_id(lu_id)
+                print('Removing HLU ID reserve... ')
+                # remove hlu
+                for hlu_id in change_module.hlu_ids:
+                    vnx_add_dev.remove_reserved_hlu_id(
+                        hlu_id,
+                        change_module.stggroup_name)
+
+                # remove hlu if is for cluster
+                for cluster_node in change_module.cls_nodes.keys():
+                    for hlu_id in change_module.cls_nodes[cluster_node][3]:
+                        vnx_add_dev.remove_reserved_hlu_id(
+                            hlu_id, change_module.cls_nodes[cluster_node][1]
+                        )
+                print('LUN and HLU ID cleanup finished.')
+
+            _cancel_change(change_file)
 
             exit()
 
@@ -603,7 +831,7 @@ def main_menu():
             except ValueError, e:
                 print "ERROR: {}".format(e)
 
-            _move_change(change_file)
+            _finish_change(change_file)
 
     else:
         print 'Wrong option. Exiting.'
