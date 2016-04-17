@@ -225,11 +225,14 @@ def menu_ibm_ds8k(change=None, hostname_client=None, storage_name=None,
             exit(1)
         else:
             print('{0}Client informations:'.format(subtitle))
-            print('Volume Group from \033[1;32m{0}\033[1;00m identified '
-                  'as \033[1;32m{1}\033[1;00m.'.format(
-                wwn_client, volume_group[1]))
-            print('Hostname used on storage is '
-                  '\033[1;32m{0}\033[1;00m\n'.format(hostname_client_storage[1]))
+            print(
+                'Volume Group from \033[1;32m{0}\033[1;00m identified '
+                'as \033[1;32m{1}\033[1;00m.'.format(
+                    wwn_client, volume_group[1]))
+            print(
+                'Hostname used on storage is '
+                '\033[1;32m{0}\033[1;00m\n'.format(
+                    hostname_client_storage[1]))
 
         return hostname_client_storage, volume_group
 
@@ -474,20 +477,6 @@ def main_menu():
 
         os.rename(orig_change, dest_change)
 
-    def _clear_reserved_ids(lss_id_list):
-        for l_id in lss_id_list:
-            reserved_ids = open(
-                '{0}/stgadm/data/reserved_ids.db'.format(
-                    config.stghome), 'r')
-            line_reservedids = reserved_ids.readlines()
-            reserved_ids.close()
-            reserved_ids = open(
-                '{0}/stgadm/data/reserved_ids.db'.format(
-                    config.stghome), 'w')
-            for lineids in line_reservedids:
-                reserved_ids.write(lineids.replace(l_id + '\n', ''))
-            reserved_ids.close()
-
     os.system('clear')
     print('')
     print('[ Storage Adm                           ]')
@@ -590,8 +579,10 @@ def main_menu():
 
         except ValueError:
 
-            _clear_reserved_ids(change_module.lss_1_id_list)
-            _clear_reserved_ids(change_module.lss_2_id_list)
+            for l_1_id in change_module.lss_1_id_list:
+                ds8k_add_dev.remove_reserved_id(l_1_id)
+            for l_2_id in change_module.lss_2_id_list:
+                ds8k_add_dev.remove_reserved_id(l_2_id)
 
             _move_change(change_file)
 

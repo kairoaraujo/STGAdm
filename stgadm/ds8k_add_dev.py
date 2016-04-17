@@ -7,6 +7,21 @@ import pystorage
 import os
 
 
+def remove_reserved_id(lun_id):
+    """ Clear ID from reserved_ids.db
+        :param lun_id: array if with LUN IDs
+    """
+    reserved_ids = open(
+        '{0}/stgadm/data/ds8k_reserved_ids.db'.format(config.stghome), 'r')
+    line_reservedids = reserved_ids.readlines()
+    reserved_ids.close()
+    reserved_ids = open(
+        '{0}/stgadm/data/ds8k_reserved_ids.db'.format(config.stghome), 'w')
+    for lineids in line_reservedids:
+        reserved_ids.write(lineids.replace(lun_id + '\n', ''))
+    reserved_ids.close()
+
+
 class New:
     def __init__(self, change=None, hostname_client=None, storage_name=None,
                  wwn_client=None, stg_name=None, stg_type=None, stg_sid=None,
@@ -160,26 +175,11 @@ class New:
 
             f_evidence_file.close()
 
-        def _remove_reserved_id(lun_id):
-            """ Clear ID from reserved_ids.db
-
-                :lun_id: array if with LUN IDs
-                """
-
-            reserved_ids = open(
-                '{0}/stgadm/data/reserved_ids.db'.format(config.stghome), 'r')
-            line_reservedids = reserved_ids.readlines()
-            reserved_ids.close()
-            reserved_ids = open(
-                '{0}/stgadm/data/reserved_ids.db'.format(config.stghome), 'w')
-            for lineids in line_reservedids:
-                reserved_ids.write(lineids.replace(lun_id + '\n', ''))
-            reserved_ids.close()
-
         evidence_file = open(evidence_file_name, 'a')
-        evidence_file.write("# CREATING/ALLOCATION LUN(s)\n"
-                            "############################\n".format(
-            self.vol_group))
+        evidence_file.write(
+            "# CREATING/ALLOCATION LUN(s)\n"
+            "############################\n".format(
+                self.vol_group))
         evidence_file.close()
 
         for l_id in self.lss_1_id_list:
@@ -188,7 +188,7 @@ class New:
                                             self.vol_group, l_id)
 
             _write_evidence(exec_return, evidence_file_name)
-            _remove_reserved_id(l_id)
+            remove_reserved_id(l_id)
 
         if self.disk_count > 1:
             for l_id in self.lss_2_id_list:
@@ -198,7 +198,7 @@ class New:
                                                 self.vol_group, l_id)
 
                 _write_evidence(exec_return, evidence_file_name)
-                _remove_reserved_id(l_id)
+                remove_reserved_id(l_id)
 
         # write the status of volume group
         evidence_file = open(evidence_file_name, 'a')
@@ -221,10 +221,11 @@ class New:
             for cluster_node in self.cls_nodes.keys():
 
                 evidence_file = open(evidence_file_name, 'a')
-                evidence_file.write("# Adding LUN(s) for Cluster node {0} "
-                                    "[Volume Group {1}]\n".format(
-                    self.cls_nodes[cluster_node][0],
-                    self.cls_nodes[cluster_node][1]))
+                evidence_file.write(
+                    "# Adding LUN(s) for Cluster node {0} "
+                    "[Volume Group {1}]\n".format(
+                        self.cls_nodes[cluster_node][0],
+                        self.cls_nodes[cluster_node][1]))
                 evidence_file.close()
 
                 for l_id in self.lss_1_id_list:
@@ -383,9 +384,10 @@ class New:
         os.rename(orig_change, dest_change)
 
         if os.path.isfile(
-                '{0}/stgadm/data/reserved_ids.db'.format(config.stghome)):
+                '{0}/stgadm/data/ds8k_reserved_ids.db'.format(config.stghome)):
             reserve_ids_file = open(
-                '{0}/stgadm/data/reserved_ids.db'.format(config.stghome), 'a')
+                '{0}/stgadm/data/ds8k_reserved_ids.db'.format(config.stghome),
+                'a')
             for l_ids in self.lss_1_id_list:
                 reserve_ids_file.write(l_ids + '\n')
             for l_ids in self.lss_2_id_list:
