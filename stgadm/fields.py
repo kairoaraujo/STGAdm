@@ -25,14 +25,21 @@ class Fields:
         while True:
 
             self.variable = raw_input('{0}'.format(self.textfield))
+
+            if ':' in self.variable:
+                self.variable = self.variable.replace(':', '')
+
             if (self.variable.isspace()) or (self.variable == '') or \
                     (' ' in self.variable):
-                print ("{0} can not be blank or contain spaces".
-                       format(self.field))
+                print ("{0}can not be blank or contain spaces.".
+                       format(self.textfield))
 
-            elif not re.match("^[A-Za-z0-9_-]*$", self.variable):
-                print ("{0} can be only letters and numbers.".
-                       format(self.field))
+            elif (self.variable[0].isdigit()) and (self.field == 'change'):
+                print ("{0}can not start with number.".format(self.textfield))
+
+            elif not re.match("^[A-Za-z0-9_]*$", self.variable):
+                print ("{0}can be only letters, numbers and _.".
+                       format(self.textfield))
 
             else:
                 break
