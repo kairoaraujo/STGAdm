@@ -9,15 +9,20 @@ import config
 class SystemStorages:
     """ Select, List and Show Systems Storages from config file. """
 
-    def __init__(self, stg_sys='', stg_type='', stg_sig=''):
-
+    def __init__(self, stg_sys=None, stg_type=None, stg_sid=None,
+                 vnx_1ip=None, vnx_2ip=None, vnx_user=None, vnx_pass=None,
+                 vnx_scope=None):
         self.stg_sys = stg_sys
         self.stg_type = stg_type
-        self.stg_sid = stg_sig
-
-    pass
+        self.stg_sid = stg_sid
+        self.vnx_1ip = vnx_1ip
+        self.vnx_2ip = vnx_2ip
+        self.vnx_user = vnx_user
+        self.vnx_pass = vnx_pass
+        self.vnx_scope = vnx_scope
 
     def selectstorage(self):
+
         """ Selection in ASCII mode Systems Storage. """
 
         global storage_option
@@ -45,6 +50,17 @@ class SystemStorages:
         self.stg_sid = config.storages[('{0}'.format(storages_keys
                                                      [storage_option]))][1]
 
+        if self.stg_type == 'EMC_VNX':
+            self.vnx_1ip = self.stg_sid
+            self.vnx_2ip = config.storages[('{0}'.format(
+                storages_keys[storage_option]))][2]
+            self.vnx_user = config.storages[('{0}'.format(
+                storages_keys[storage_option]))][3]
+            self.vnx_pass = config.storages[('{0}'.format(
+                storages_keys[storage_option]))][4]
+            self.vnx_scope = config.storages[('{0}'.format(
+                storages_keys[storage_option]))][5]
+
     def getstorage(self):
 
         return self.stg_sys
@@ -56,3 +72,23 @@ class SystemStorages:
     def getsid(self):
 
         return self.stg_sid
+
+    def getvnx_1ip(self):
+
+        return self.vnx_1ip
+
+    def getvnx_2ip(self):
+
+        return self.vnx_2ip
+
+    def getvnx_user(self):
+
+        return self.vnx_user
+
+    def getvnx_pass(self):
+
+        return self.vnx_pass
+
+    def getvnx_scope(self):
+
+        return self.vnx_scope
