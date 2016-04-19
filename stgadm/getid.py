@@ -3,19 +3,19 @@
 #
 #
 import config
+import os
 import pystorage
 import subprocess
-import os
 
 
-class DS8K:
+class DS8K(object):
     def __init__(self, dscli_bin, dscli_profile_path, lss_id):
-        """
-        Manage the IDs for IBM DS8K
+        """Manage the IDs for IBM DS8K
 
         :param dscli_bin: path of dscli_bin
         :param dscli_profile_path: profile file os dscli
         :param lss_id: LSS ID tat you want to ge the free ids (ex: A6)
+
         :return:
         """
 
@@ -30,7 +30,7 @@ class DS8K:
 
         try:
             int(self.lss_id, 16)
-        except:
+        except ValueError:
             raise ValueError(
                 'lss_id need to be a string with valid hex value.\n'
                 'Tip: Between 00 and FF.')
@@ -61,17 +61,14 @@ class DS8K:
         return sorted(lss_list_free)
 
     def free_lss(self):
-        """
-
-        :return: array with free ids (lss ID) from DS8K
-        """
+        """:return: array with free ids (lss ID) from DS8K"""
 
         lss_list_used = []
         lss_list_reserved = []
         ds8k = pystorage.DS8K(self.dscli_bin, self.dscli_profile_path)
         lss_list = ds8k.lsfbvol('-lss {0}'.format(self.lss_id))
         if lss_list[0] != 0:
-            print ("ERROR: {0}".format(lss_list[1]))
+            print("ERROR: {0}".format(lss_list[1]))
 
         for l_lss in lss_list[1].split('\n')[3:]:
             try:
@@ -92,11 +89,10 @@ class DS8K:
         return self._check_lss(lss_list_used, lss_list_reserved)
 
 
-class VNX:
+class VNX(object):
     def __init__(self, naviseccli_bin, ip, stg_user, stg_pass, stg_scope,
                  stg_pool):
-        """
-        Manage the IDs for EMC VNX
+        """Manage the IDs for EMC VNX
 
         :param naviseccli_bin: full path of naviseccli binary
         :param ip: IP of storage
@@ -115,9 +111,11 @@ class VNX:
         self.stg_pool = stg_pool
 
     def free_lu(self):
-        """
+        """Return the free lu ids in array
 
         :return: array with free ids (lu) from EMC VNX.
+
+        Note: The default limit are 8192 IDs by Pool
         """
 
         vnx = pystorage.EMC.VNX(self.naviseccli_bin, self.ip, self.ip,
@@ -150,10 +148,13 @@ class VNX:
         return free_lu
 
     def free_hlu(self, stggroup_name):
-        """
+        """Return the free hlu ids in array
 
         :param stggroup_name: Storage Group Name
+
         :return: array with free hlu ids (hlu) from EMC VNX.
+
+        Note: The default limit are 256 IDs by Storage Group
         """
 
         vnx = pystorage.EMC.VNX(self.naviseccli_bin, self.ip, self.ip,

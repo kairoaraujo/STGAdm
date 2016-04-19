@@ -9,4 +9,4 @@ try:
     main_menu()
     ''' Import the main menu of STGAdm '''
 except KeyboardInterrupt:
-    print ("\n\nCtrl+C pressed! Exiting without save.\n")
+    print("\n\nCtrl+C pressed! Exiting without save.\n")

@@ -3,12 +3,13 @@
 #
 import config
 import globalvar
-import pystorage
 import os
+import pystorage
 
 
 def remove_reserved_id(lun_id):
-    """ Clear ID from reserved_ids.db
+    """Clear ID from reserved_ids.db
+
         :param lun_id: array if with LUN IDs
     """
     reserved_ids = open(
@@ -22,7 +23,7 @@ def remove_reserved_id(lun_id):
     reserved_ids.close()
 
 
-class New:
+class New(object):
     def __init__(self, change=None, hostname_client=None, storage_name=None,
                  wwn_client=None, stg_name=None, stg_type=None, stg_sid=None,
                  pool_1_option=None, pool_2_option=None, disk_1_count=None,
@@ -66,16 +67,24 @@ class New:
                                    config.dscli_profile_path + '/' +
                                    self.stg_sid)
 
+        self.file_change = open(
+            '{0}/stgadm/tmp/change_{1}_{2}_{3}_{4}.py'.format(
+                config.stghome,
+                self.change,
+                self.hostname_client_stg,
+                self.vol_group,
+                self.time), 'w')
+
     def _lun_availability(self, lun_list):
         return_msg_free = 'CMUC00234I lsfbvol: No FB Volume found.'
 
         for lun in lun_list:
             if self.ds8k.lsfbvol(lun)[1].split('\n')[1] == return_msg_free:
-                print ("LUN {0} is available to create.".format(lun))
+                print("LUN {0} is available to create.".format(lun))
 
             else:
-                print ("ERROR: LUN {0} is not longer available.".format(lun))
-                print ("       This change is automatically canceled!")
+                print("ERROR: LUN {0} is not longer available.".format(lun))
+                print("       This change is automatically canceled!")
                 raise ValueError("InvalidLUNId")
 
     def preview(self):
@@ -127,16 +136,16 @@ class New:
 
         try:
             self._lun_availability(self.lss_1_id_list)
-        except ValueError, e:
+        except ValueError as e:
             raise ValueError(e)
 
         if len(self.lss_2_id_list) > 0:
             try:
                 self._lun_availability(self.lss_2_id_list)
-            except ValueError, e:
+            except ValueError as e:
                 raise ValueError(e)
 
-        print ('\nLUN availability finished.\n')
+        print('\nLUN availability finished.\n')
 
     def execute(self):
 
@@ -159,11 +168,11 @@ class New:
 
         # write evidence
         def _write_evidence(output_data, file_name):
-            """ Write the output data on file
+            """Write the output data on file
 
                 :param output_data: this is a array with return code and output
                                     [return code, output data]
-                """
+            """
 
             f_evidence_file = open(file_name, 'a')
 
@@ -256,19 +265,9 @@ class New:
         return evidence_file_name
 
     def headerchange(self):
-        """ Write the header of file. """
+        """Write the header of file. """
 
-        global file_change
-
-        file_change = open(
-            '{0}/stgadm/tmp/change_{1}_{2}_{3}_{4}.py'.format(
-                config.stghome,
-                self.change,
-                self.hostname_client_stg,
-                self.vol_group,
-                self.time), 'w')
-
-        file_change.write(
+        self.file_change.write(
             '#!/usr/bin/env python\n'
             '# -*- coding: utf-8 -*-\n'
             '#\n'
@@ -278,9 +277,9 @@ class New:
         )
 
     def writechange(self):
-        """ Write the body of file. """
+        """Write the body of file. """
 
-        file_change.write(
+        self.file_change.write(
             "\n"
             "# import \n"
             "\n"
@@ -362,10 +361,10 @@ class New:
                 self.time))  # 21
 
     def closechange(self):
-        """ Close the file and move to correct directory """
+        """Close the file and move to correct directory """
 
-        file_change.write('\n# File closed with success by STGAdm.\n')
-        file_change.close()
+        self.file_change.write('\n# File closed with success by STGAdm.\n')
+        self.file_change.close()
 
         orig_change = '{0}/stgadm/tmp/change_{1}_{2}_{3}_{4}.py'.format(
             config.stghome,

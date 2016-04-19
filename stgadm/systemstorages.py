@@ -6,8 +6,8 @@
 import config
 
 
-class SystemStorages:
-    """ Select, List and Show Systems Storages from config file. """
+class SystemStorages(object):
+    """Select, List and Show Systems Storages from config file. """
 
     def __init__(self, stg_sys=None, stg_type=None, stg_sid=None,
                  vnx_1ip=None, vnx_2ip=None, vnx_user=None, vnx_pass=None,
@@ -22,17 +22,16 @@ class SystemStorages:
         self.vnx_scope = vnx_scope
 
     def selectstorage(self):
-
-        """ Selection in ASCII mode Systems Storage. """
+        """Selection in ASCII mode Systems Storage. """
 
         global storage_option
-        print ("\n[Storage Selection]\n"
-               "\nSelect the system storage used by client:")
+        print("\n[Storage Selection]\n"
+              "\nSelect the system storage used by client:")
         storages_keys = list(config.storages.keys())
         storages_length = (len(config.storages.keys())) - 1
         count = 0
         while count <= storages_length:
-            print ("{0} : {1}".format(count, storages_keys[count]))
+            print("{0} : {1}".format(count, storages_keys[count]))
             count += 1
 
         while True:

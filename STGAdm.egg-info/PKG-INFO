@@ -1,0 +1,80 @@
+Metadata-Version: 1.1
+Name: STGAdm
+Version: 0.3.4
+Summary: Storage Disk Administration Tool (EMC VNX, VMAX and IBM DS8K)
+Home-page: https://github.com/kairoaraujo/STGAdm/
+Author: Kairo Araujo
+Author-email: kairo@kairo.eti.br
+License: BSD
+Description: STGAdm - Storage Admin Tool
+        ===========================
+        
+        This is a util to use for Storage Disk Administration.
+        
+        Support IBM DS8000 (DS8K) and EMC VMAX. (check Version for more informations)
+        
+        
+        Version
+        -------
+        
+        https://github.com/kairoaraujo/STGAdm/releases
+        
+            
+        Installation / Configuration / Using
+        ------------------------------------
+        
+        - Requirement
+        
+            $ pip install PyStorage
+        
+        - Download latest version of STGAdm
+        
+            https://github.com/kairoaraujo/STGAdm/releases
+         
+        Uncompress the util
+        
+        - Configure the STGAdm
+        
+            STGAdm/stgadm/config.py
+        
+        - Execute the STGAdm
+        
+            $ python stgadm.py
+        
+        An interactive menu will be appear. Have fun!
+        
+        Screenshots
+        -----------
+        
+        - Creating the change/ticket/wo
+        
+        .. image:: images/ss1.png
+        
+        .. image:: images/ss-ds8k-1.png
+        
+        .. image:: images/ss-ds8k-2.png
+            
+        .. image:: images/ss-ds8k-3.png
+        
+        
+        - Executing the change/ticket/wo
+        
+        .. image:: images/ss-ds8k-4.png
+        
+        .. image:: images/ss-ds8k-5.png
+        
+        .. image:: images/ss-ds8k-6.png
+        
+Keywords: Storage Disk Administration Tool (EMC VNX,VMAX and IBM DS8K)
+Platform: Posix; MacOS X; Windows
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: OS Independent
+Classifier: Topic :: System :: Archiving
+Classifier: Topic :: System :: Hardware
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 2.6
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 2.8

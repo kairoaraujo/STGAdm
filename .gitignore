@@ -1,3 +1,4 @@
 *.pyc
-stgadm/data_tests/*
 *.idea
+stgadm/data_tests/*
+*.tox

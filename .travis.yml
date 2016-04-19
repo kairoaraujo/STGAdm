@@ -1,0 +1,19 @@
+language: python
+sudo: false
+python:
+  - "2.6"
+  - "2.7"
+  - "3.3"
+  - "3.4"
+  - "3.5"
+install:
+  - pop install tox-travis
+  # Self-install for setup.py-driven deps
+  - pip install -e .
+script: tox
+
+
+notifications:
+  email: false
+after_success:
+  - coveralls

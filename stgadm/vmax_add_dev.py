@@ -4,12 +4,12 @@
 #
 import config
 import globalvar
-import pystorage
 import os
+import pystorage
 import time
 
 
-class New:
+class New(object):
     def __init__(self, change=None, hostname_client=None, storage_name=None,
                  wwn_client=None, stg_name=None, stg_type=None, stg_sid=None,
                  ign=None, mvn=None, sgn=None, stg_pool=None, disk_volume=None,
@@ -34,6 +34,12 @@ class New:
         self.disk_count = disk_count
         self.action = action
         self.time = globalvar.timestr.replace('-', '_')
+
+        self.file_change = open(
+            '{0}/stgadm/tmp/change_{1}_{2}_{3}.py'.format(config.stghome,
+                                                          self.change,
+                                                          self.ign,
+                                                          self.time), 'w')
 
     def preview(self):
         print('\nConfig validation\n')
@@ -77,7 +83,7 @@ class New:
         print(exec_return[1])
 
         if exec_return[0] != 0:
-            print exec_return[2]
+            print(exec_return[2])
             print('\n** ERROR Code: {0} **\n'.format(exec_return[0]))
             exit()
         else:
@@ -149,17 +155,9 @@ class New:
         return file_name
 
     def headerchange(self):
-        """ Write the header of file. """
+        """Write the header of file. """
 
-        global file_change
-
-        file_change = open(
-            '{0}/stgadm/tmp/change_{1}_{2}_{3}.py'.format(config.stghome,
-                                                          self.change,
-                                                          self.ign,
-                                                          self.time), 'w')
-
-        file_change.write(
+        self.file_change.write(
             '#!/usr/bin/env python\n'
             '# -*- coding: utf-8 -*-\n'
             '#\n'
@@ -169,9 +167,9 @@ class New:
         )
 
     def writechange(self):
-        """ Write the body of file. """
+        """Write the body of file. """
 
-        file_change.write(
+        self.file_change.write(
             "\n"
             "# import \n"
             "\n"
@@ -242,10 +240,10 @@ class New:
                 self.time))  # 17)
 
     def closechange(self):
-        """ Close the file and move to correct directory """
+        """Close the file and move to correct directory """
 
-        file_change.write('\n# File closed with success by STGAdm.\n')
-        file_change.close()
+        self.file_change.write('\n# File closed with success by STGAdm.\n')
+        self.file_change.close()
 
         orig_change = '{0}/stgadm/tmp/change_{1}_{2}_{3}.py'.format(
             config.stghome, self.change, self.ign, self.time)
@@ -257,4 +255,3 @@ class New:
 
         if os.path.isfile(dest_change):
             return 'The change {0} was successfully save.'.format(dest_change)
-

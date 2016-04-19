@@ -2,18 +2,18 @@
 # -*- coding: utf-8 -*-
 #
 #
-import os
-import globalvar
-import systemstorages
 import config
-import fields
-import pystorage
-import vmax_add_dev
-import vnx_add_dev
 import ds8k_add_dev
+import fields
 import findchange
 import getid
+import globalvar
 import importlib
+import os
+import pystorage
+import systemstorages
+import vmax_add_dev
+import vnx_add_dev
 
 
 def menu_emc_vmax(change=None, hostname_client=None, storage_name=None,
@@ -22,8 +22,8 @@ def menu_emc_vmax(change=None, hostname_client=None, storage_name=None,
     global pool_option, mvn_option
 
     if not os.path.isdir(config.symcli_path):
-        print ("\nERROR: SYMCLI path dir not found. Check config file item "
-               "symcli_path.")
+        print("\nERROR: SYMCLI path dir not found. Check config file item "
+              "symcli_path.")
         exit()
 
     chk_server = pystorage.EMC.VMAX(config.symcli_path)
@@ -58,7 +58,7 @@ def menu_emc_vmax(change=None, hostname_client=None, storage_name=None,
 
             print('\nMultiples MVN detected. Please choose an MVN.\n')
             for l_mvn in mvn:
-                print ('{0}: {1}'.format(count, l_mvn))
+                print('{0}: {1}'.format(count, l_mvn))
                 count += 1
 
             while True:
@@ -97,7 +97,7 @@ def menu_emc_vmax(change=None, hostname_client=None, storage_name=None,
 
     print('\n[POOL Selection]')
     lspool = lspool[1]
-    print lspool
+    print(lspool)
     lspool = lspool.split('\n')
 
     print('Select the Storage Pool from \033[1;32m{0}\033[1;00m storage'
@@ -115,7 +115,7 @@ def menu_emc_vmax(change=None, hostname_client=None, storage_name=None,
 
     count = 0
     for l_pool in pool_list:
-        print ('{0}: {1}'.format(count, l_pool))
+        print('{0}: {1}'.format(count, l_pool))
         count += 1
 
     while True:
@@ -184,8 +184,9 @@ def menu_emc_vmax(change=None, hostname_client=None, storage_name=None,
 
     new_change.preview()
 
-    save_config = fields.YesNo('Do you would like save this allocation?[y/n]: ',
-                               'n')
+    save_config = fields.YesNo(
+        'Do you would like save this allocation?[y/n]: ',
+        'n')
     save_config = save_config.check()
 
     if save_config == 'y':
@@ -193,7 +194,7 @@ def menu_emc_vmax(change=None, hostname_client=None, storage_name=None,
         new_change.headerchange()
         new_change.writechange()
         end_change = new_change.closechange()
-        print end_change
+        print(end_change)
 
     else:
         print('Finishing. Thank you.')
@@ -201,13 +202,14 @@ def menu_emc_vmax(change=None, hostname_client=None, storage_name=None,
 
 def menu_emc_vnx(change=None, hostname_client=None, storage_name=None,
                  stg_name=None, stg_type=None, stg_1ip=None, stg_2ip=None,
-                 stg_user=None, stg_pass=None, stg_scope=None, wwn_client=None):
+                 stg_user=None, stg_pass=None, stg_scope=None,
+                 wwn_client=None):
 
     global pool_option, pool
 
     if not os.path.isfile(config.naviseccli_bin):
-        print ("\nERROR: NAVISECCLI not found. Check config file item "
-               "naviseccli_bin.")
+        print("\nERROR: NAVISECCLI not found. Check config file item "
+              "naviseccli_bin.")
         exit()
 
     disk_count = disk_volume / lun_size
@@ -221,8 +223,7 @@ def menu_emc_vnx(change=None, hostname_client=None, storage_name=None,
         stg_group = vnx.get_stggroup(wwn)
 
         if (stg_group[0] != 0) or (hostname_client_stg[0] != 0):
-            print "{0} - {1}".format(stg_group,
-                                     hostname_client_stg)
+            print("{0} - {1}".format(stg_group, hostname_client_stg))
             exit(1)
         else:
             print('{0}Client informations:'.format(subtitle))
@@ -244,7 +245,7 @@ def menu_emc_vnx(change=None, hostname_client=None, storage_name=None,
     pools = vnx.pool_list()
 
     if pools[0] != 0:
-        print ("ERROR: {0}".format(pools[1]))
+        print("ERROR: {0}".format(pools[1]))
         exit(pools[0])
 
     else:
@@ -253,7 +254,7 @@ def menu_emc_vnx(change=None, hostname_client=None, storage_name=None,
             print('\nMultiples Pools detected. Please choose a Pool.\n')
             count = 0
             for l_pools in pools[1]:
-                print ('{0}: {1}'.format(count, l_pools))
+                print('{0}: {1}'.format(count, l_pools))
                 count += 1
 
             while True:
@@ -325,12 +326,11 @@ def menu_emc_vnx(change=None, hostname_client=None, storage_name=None,
             else:
                 check_new_cls_node = False
 
-
-    print ("Please give the TAG/SID (Code to identify) the LUNs.\n"
-           "Use a name to identify the environment or client.\n"
-           "Examples: DEV or MIGRATION or FOOBAR\n\n"
-           "With this code the LUNs will be create as TAG/SID_LUN_SSL:\n"
-           "Example: DEV_LUN_1 or MIGRATION_LUN_7 or FOOBAR_LUN_45\n")
+    print("Please give the TAG/SID (Code to identify) the LUNs.\n"
+          "Use a name to identify the environment or client.\n"
+          "Examples: DEV or MIGRATION or FOOBAR\n\n"
+          "With this code the LUNs will be create as TAG/SID_LUN_SSL:\n"
+          "Example: DEV_LUN_1 or MIGRATION_LUN_7 or FOOBAR_LUN_45\n")
 
     lun_sid = fields.Fields('lun_sid', 'LUN SID(TAG): ')
     lun_sid.chkfieldstr()
@@ -364,14 +364,15 @@ def menu_emc_vnx(change=None, hostname_client=None, storage_name=None,
     new_change = vnx_add_dev.New(change, hostname_client, storage_name,
                                  wwn_client, stg_name, stg_type, stg_1ip,
                                  stg_2ip, stg_user, stg_pass, stg_scope,
-                                 pool, disk_count, lu_ids, hlu_ids, disk_volume,
-                                 lun_size, lun_sid, hostname_client_storage,
-                                 stggroup_name, config.lun_type_create,
-                                 cls, cls_nodes)
+                                 pool, disk_count, lu_ids, hlu_ids,
+                                 disk_volume, lun_size, lun_sid,
+                                 hostname_client_storage, stggroup_name,
+                                 config.lun_type_create, cls, cls_nodes)
     new_change.preview()
 
-    save_config = fields.YesNo('Do you would like save this allocation?[y/n]: ',
-                               'n')
+    save_config = fields.YesNo(
+        'Do you would like save this allocation?[y/n]: ',
+        'n')
     save_config = save_config.check()
 
     if save_config == 'y':
@@ -379,7 +380,7 @@ def menu_emc_vnx(change=None, hostname_client=None, storage_name=None,
         new_change.headerchange()
         new_change.writechange()
         end_change = new_change.closechange()
-        print end_change
+        print(end_change)
 
     else:
         print('Finishing. Thank you.')
@@ -390,12 +391,12 @@ def menu_ibm_ds8k(change=None, hostname_client=None, storage_name=None,
     global pool_1_option, pool_2_option, code_1_pool, code_2_pool
 
     if not os.path.isfile(config.dscli_bin):
-        print ("\nERROR: DSCLI not found. Check config file item dscli_bin.")
+        print("\nERROR: DSCLI not found. Check config file item dscli_bin.")
         exit()
 
     if not os.path.isfile(config.dscli_profile_path + '/' + stg_sid):
-        print ("\nERROR: DSCLI not found. Check config file item "
-               "dscli_profile_path for {0}".format(stg_name))
+        print("\nERROR: DSCLI not found. Check config file item "
+              "dscli_profile_path for {0}".format(stg_name))
         exit()
 
     ds8k = pystorage.IBM.DS8K(config.dscli_bin,
@@ -407,8 +408,8 @@ def menu_ibm_ds8k(change=None, hostname_client=None, storage_name=None,
         hostname_client_storage = ds8k.get_hostname(wwn)
 
         if (volume_group[0] != 0) or hostname_client_storage[0] != 0:
-            print "{0} - {1}".format(volume_group[1],
-                                     hostname_client_storage[1])
+            print("{0} - {1}".format(volume_group[1],
+                                     hostname_client_storage[1]))
             exit(1)
         else:
             print('{0}Client informations:'.format(subtitle))
@@ -478,10 +479,10 @@ def menu_ibm_ds8k(change=None, hostname_client=None, storage_name=None,
     # pool informations
     ds8k_pools = ds8k.lsextpool()
     if ds8k_pools[0] != 0:
-        print 'ERROR: {0}'.format(ds8k_pools[1])
+        print('ERROR: {0}'.format(ds8k_pools[1]))
         exit()
     else:
-        print ds8k_pools[1]
+        print(ds8k_pools[1])
 
     pool_list = []
     for l_pool in ds8k_pools[1].split('\n')[3:]:
@@ -506,7 +507,7 @@ def menu_ibm_ds8k(change=None, hostname_client=None, storage_name=None,
     # Primary Pool
     count = 0
     for l_pool in pool_list:
-        print ('{0}: {1}'.format(count, l_pool))
+        print('{0}: {1}'.format(count, l_pool))
         count += 1
 
     while True:
@@ -530,11 +531,11 @@ def menu_ibm_ds8k(change=None, hostname_client=None, storage_name=None,
             code_1_pool = raw_input('Digit the LSS: ')
             int(code_1_pool, 16)
             if len(code_1_pool) != 2:
-                print ("The code need to be between 00 and FF.")
+                print("The code need to be between 00 and FF.")
             else:
                 break
         except ValueError:
-            print ("The code need to be between 00 and FF.")
+            print("The code need to be between 00 and FF.")
 
     print("Primary pool: {0} | LUN ID Code: {1}\n".format(
         pool_1_option, code_1_pool))
@@ -561,7 +562,7 @@ def menu_ibm_ds8k(change=None, hostname_client=None, storage_name=None,
         # Secondary Pool
         count = 0
         for l_pool in pool_list:
-            print ('{0}: {1}'.format(count, l_pool))
+            print('{0}: {1}'.format(count, l_pool))
             count += 1
 
         while True:
@@ -584,11 +585,11 @@ def menu_ibm_ds8k(change=None, hostname_client=None, storage_name=None,
                 code_2_pool = raw_input('Digit the LSS: ')
                 int(code_2_pool, 16)
                 if len(code_2_pool) != 2:
-                    print ("The code need to be between 00 and FF.")
+                    print("The code need to be between 00 and FF.")
                 else:
                     break
             except ValueError:
-                print ("The code need to be between 00 and FF.")
+                print("The code need to be between 00 and FF.")
 
         print(
             "\n* Primary pool   : {0} | LUN ID Code: {1}XX\n"
@@ -618,11 +619,11 @@ def menu_ibm_ds8k(change=None, hostname_client=None, storage_name=None,
 
     print("\nPlease wait...")
 
-    print ("Please give the TAG/SID (Code to identify) the LUNs.\n"
-           "Use a name to identify the environment or client.\n"
-           "Examples: DEV or MIGRATION or FOOBAR\n\n"
-           "With this code the LUNs will be create as TAG/SID_LUN_SSL:\n"
-           "Example: DEV_LUN_A601 or MIGRATION_LUN_AA07 or FOOBAR_LUN_045A\n")
+    print("Please give the TAG/SID (Code to identify) the LUNs.\n"
+          "Use a name to identify the environment or client.\n"
+          "Examples: DEV or MIGRATION or FOOBAR\n\n"
+          "With this code the LUNs will be create as TAG/SID_LUN_SSL:\n"
+          "Example: DEV_LUN_A601 or MIGRATION_LUN_AA07 or FOOBAR_LUN_045A\n")
 
     lun_sid = fields.Fields('lun_sid', 'LUN SID(TAG): ')
     lun_sid.chkfieldstr()
@@ -637,8 +638,9 @@ def menu_ibm_ds8k(change=None, hostname_client=None, storage_name=None,
                                   disk_count, cls, cls_nodes)
     new_change.preview()
 
-    save_config = fields.YesNo('Do you would like save this allocation?[y/n]: ',
-                               'n')
+    save_config = fields.YesNo(
+        'Do you would like save this allocation?[y/n]: ',
+        'n')
     save_config = save_config.check()
 
     if save_config == 'y':
@@ -646,7 +648,7 @@ def menu_ibm_ds8k(change=None, hostname_client=None, storage_name=None,
         new_change.headerchange()
         new_change.writechange()
         end_change = new_change.closechange()
-        print end_change
+        print(end_change)
 
     else:
         print('Finishing. Thank you.')
@@ -821,17 +823,17 @@ def main_menu():
         execute_change = execute_change.check()
 
         if execute_change == 'y':
-            print "Executing the change. Please wait...\n"
+            print("Executing the change. Please wait...\n")
 
             # import change_file
             change_module = importlib.import_module(
                 'stgadm.changes.{0}'.format(change_file))
             try:
                 change_module.execute()
-            except ValueError, e:
-                print "ERROR: {}".format(e)
+            except ValueError as e:
+                print("ERROR: {}".format(e))
 
             _finish_change(change_file)
 
     else:
-        print 'Wrong option. Exiting.'
+        print('Wrong option. Exiting.')

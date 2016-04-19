@@ -3,24 +3,24 @@
 import re
 
 
-class Fields:
-    """ This class verify if the fields used is blank or contain spaces.
+class Fields(object):
+    """This class verify if the fields used is blank or contain spaces.
 
-        Args:
+       Args:
           field (str): The filed variable, like 'name', 'change' etc...
-          textfield (stg): The question for the field, like 'Whats de LPAR name'
-                           'Whats the change number' etc .
+          textfield (stg): The question for the field, like 'Whats de LPAR
+                            name', 'Whats the change number' etc .
     """
 
     def __init__(self, field, textfield, variable=''):
-        """ Initial to get field and textField arguments. """
+        """Initial to get field and textField arguments. """
 
         self.field = field
         self.textfield = textfield
         self.variable = variable
 
     def chkfieldstr(self):
-        """ Check field strings doesn't has a blank or spaces. """
+        """Check field strings doesn't has a blank or spaces. """
 
         while True:
 
@@ -31,27 +31,27 @@ class Fields:
 
             if (self.variable.isspace()) or (self.variable == '') or \
                     (' ' in self.variable):
-                print ("{0}can not be blank or contain spaces.".
-                       format(self.textfield))
+                print("{0}can not be blank or contain spaces.".format(
+                    self.textfield))
 
             elif (self.variable[0].isdigit()) and (self.field == 'change'):
-                print ("{0}can not start with number.".format(self.textfield))
+                print("{0}can not start with number.".format(self.textfield))
 
             elif not re.match("^[A-Za-z0-9_]*$", self.variable):
-                print ("{0}can be only letters, numbers and _.".
-                       format(self.textfield))
+                print("{0}can be only letters, numbers and _.".format(
+                    self.textfield))
 
             else:
                 break
 
     def strvarout(self):
-        """ Returns the answer to question field. """
+        """Returns the answer to question field. """
 
         return self.variable
 
 
-class YesNo:
-    """ A simple class to do questions and check the answer is y/n (yes or no).
+class YesNo(object):
+    """A simple class to do questions and check the answer is y/n (yes or no).
 
         Args:
           question(str): The question do want to do like 'It is correct?'.
@@ -60,13 +60,13 @@ class YesNo:
     """
 
     def __init__(self, question, answer):
-        """ Get the args. """
+        """Get the args. """
 
         self.question = question
         self.answer = answer
 
     def check(self):
-        """ Text menu to do question and check the answer. """
+        """Text menu to do question and check the answer. """
 
         check_ok = 0
         while check_ok == 0:
@@ -80,7 +80,7 @@ class YesNo:
                 check_ok = 1
 
             else:
-                print ('Please use y or n!')
+                print('Please use y or n!')
                 check_ok = 0
 
         return self.answer

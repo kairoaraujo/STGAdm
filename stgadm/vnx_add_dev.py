@@ -4,14 +4,15 @@
 #
 import config
 import globalvar
-import pystorage
 import os
+import pystorage
 
 
 def remove_reserved_id(lun_id):
-    """ Clear ID from reserved_ids.db
-        :param lun_id: array if with LUN IDs
-        """
+    """Clear ID from reserved_ids.db
+
+       :param lun_id: array if with LUN IDs
+    """
     reserved_ids = open(
         '{0}/stgadm/data/vnx_reserved_ids.db'.format(config.stghome),
         'r')
@@ -26,7 +27,8 @@ def remove_reserved_id(lun_id):
 
 
 def remove_reserved_hlu_id(hlu_id, stggroup_name):
-    """ Clear ID from reserved_ids.db
+    """Clear ID from reserved_ids.db
+
         :param hlu_id: The HLU ID
         :param stggroup_name: The storage group name from HLU
         """
@@ -45,7 +47,7 @@ def remove_reserved_hlu_id(hlu_id, stggroup_name):
     reserved_ids.close()
 
 
-class New:
+class New(object):
     def __init__(self, change=None, hostname_client=None, storage_name=None,
                  wwn_client=None, stg_name=None, stg_type=None, stg_1ip=None,
                  stg_2ip=None, stg_user=None, stg_pass=None, stg_scope=None,
@@ -87,14 +89,22 @@ class New:
                                  self.stg_2ip, self.stg_user, self.stg_pass,
                                  self.stg_scope)
 
+        self.file_change = open(
+            '{0}/stgadm/tmp/change_{1}_{2}_{3}_{4}.py'.format(
+                config.stghome,
+                self.change,
+                self.hostname_client_storage,
+                self.stggroup_name,
+                self.time), 'w')
+
     def _lun_availability(self, lun_list):
         for lun in lun_list:
             if self.vnx.show_lun(lun)[0] == 9:
-                print ("LUN {0} is available to create.".format(lun))
+                print("LUN {0} is available to create.".format(lun))
 
             else:
-                print ("ERROR: LUN {0} is not longer available.".format(lun))
-                print ("       This change is automatically canceled!")
+                print("ERROR: LUN {0} is not longer available.".format(lun))
+                print("       This change is automatically canceled!")
                 raise ValueError("InvalidLUNId")
 
     def _hlu_availability(self, hlu_list, storage_group):
@@ -108,34 +118,24 @@ class New:
 
         for hlu in hlu_list:
             if hlu in fresh_hlu:
-                print (
+                print(
                     "ERROR: HLU {0} is not longer available for "
                     "Storage Group {1}".format(
                         hlu,
                         storage_group))
-                print ("       This change is automatically canceled!")
+                print("       This change is automatically canceled!")
                 raise ValueError("InvalidHLUId")
 
             else:
-                print (
+                print(
                     "HLU {0} is available to create for "
                     "Storage Group {1}.".format(
                         hlu, storage_group))
 
     def headerchange(self):
-        """ Write the header of file. """
+        """Write the header of file. """
 
-        global file_change
-
-        file_change = open(
-            '{0}/stgadm/tmp/change_{1}_{2}_{3}_{4}.py'.format(
-                config.stghome,
-                self.change,
-                self.hostname_client_storage,
-                self.stggroup_name,
-                self.time), 'w')
-
-        file_change.write(
+        self.file_change.write(
             '#!/usr/bin/env python\n'
             '# -*- coding: utf-8 -*-\n'
             '#\n'
@@ -145,9 +145,9 @@ class New:
         )
 
     def writechange(self):
-        """ Write the body of file. """
+        """Write the body of file. """
 
-        file_change.write(
+        self.file_change.write(
             "\n"
             "# import \n"
             "\n"
@@ -233,10 +233,10 @@ class New:
                 self.time))  # 23
 
     def closechange(self):
-        """ Close the file and move to correct directory """
+        """Close the file and move to correct directory """
 
-        file_change.write('\n# File closed with success by STGAdm.\n')
-        file_change.close()
+        self.file_change.write('\n# File closed with success by STGAdm.\n')
+        self.file_change.close()
 
         orig_change = '{0}/stgadm/tmp/change_{1}_{2}_{3}_{4}.py'.format(
             config.stghome,
@@ -333,10 +333,10 @@ class New:
 
         try:
             self._lun_availability(self.lu_ids)
-        except ValueError, e:
+        except ValueError as e:
             raise ValueError(e)
 
-        print ('\nLUN availability finished.\n')
+        print('\nLUN availability finished.\n')
 
         print('Checking HLU availability...')
         print('Please wait the finish message.\n')
@@ -350,12 +350,12 @@ class New:
                         self._hlu_availability(
                             self.cls_nodes[cluster_node][3],
                             self.cls_nodes[cluster_node][1])
-                    except ValueError, e:
+                    except ValueError as e:
                         raise ValueError(e)
-        except ValueError, e:
+        except ValueError as e:
             raise ValueError(e)
 
-        print ('\nHLU availability finished.\n')
+        print('\nHLU availability finished.\n')
 
     def execute(self):
 
@@ -378,11 +378,11 @@ class New:
 
         # write evidence
         def _write_evidence(output_data, file_name):
-            """ Write the output data on file
+            """Write the output data on file
 
                 :param output_data: this is a array with return code and output
                                     [return code, output data]
-                """
+            """
 
             f_evidence_file = open(file_name, 'a')
 
@@ -398,7 +398,7 @@ class New:
             f_evidence_file.close()
 
         def _alternator(stg_1ip, stg_2ip):
-            """ Create an class to alternate between two IPs of storage
+            """Create an class to alternate between two IPs of storage
 
             :param stg_1ip: First IP address
             :param stg_2ip: Second IP Address

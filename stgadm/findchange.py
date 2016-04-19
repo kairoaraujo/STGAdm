@@ -3,30 +3,30 @@
 
 # Imports
 ##########################################################################
-import os
-import fnmatch
 import config
+import fnmatch
+import os
 
 
 def select():
-    """ Select the change/ticket file. """
-    print ("\n[Change/Ticket/WO Execution]\n"
-           "\nSelect the Change/Ticket/WO to execute:\n")
+    """Select the change/ticket file."""
+    print("\n[Change/Ticket/WO Execution]\n"
+          "\nSelect the Change/Ticket/WO to execute:\n")
     listchanges = fnmatch.filter(
         os.listdir("{0}/stgadm/changes/".format(config.stghome)), "change*.py")
     listchanges_length = len(listchanges) - 1
     if listchanges_length == -1:
-        print ('No changes found. Exiting\n')
+        print('No changes found. Exiting\n')
         exit()
     count = 0
     while count <= listchanges_length:
-        print ("{0} : {1}".format(count, listchanges[count]))
+        print("{0} : {1}".format(count, listchanges[count]))
         count += 1
     change_exec = None
     while True:
         try:
-            change_option = int(
-                raw_input("\nWhat's change/ticket id you want execute?: "))
+            change_option = int(raw_input(
+                "\nWhat's change/ticket id you want execute?: "))
             change_exec = (listchanges[change_option])
             break
         except (IndexError, ValueError):
@@ -38,8 +38,10 @@ def select():
 
 
 def ls():
-    """ Return the list of changes/tickets file available or None
-     if don't exist files
+    """Return the list of changes/tickets
+
+     :return: list of changes/ticktes file available or None if doesn't
+              exist files
     """
     listchanges = fnmatch.filter(
         os.listdir("{0}/stgadm/changes/".format(config.stghome)), "*.py")
