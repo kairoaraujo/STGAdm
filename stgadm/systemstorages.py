@@ -27,7 +27,7 @@ class SystemStorages(object):
         global storage_option
         print("\n[Storage Selection]\n"
               "\nSelect the system storage used by client:")
-        storages_keys = list(config.storages.keys())
+        storages_keys = list(sorted(config.storages.keys()))
         storages_length = (len(config.storages.keys())) - 1
         count = 0
         while count <= storages_length:

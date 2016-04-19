@@ -1,10 +1,31 @@
-STGAdm - Storage Admin Tool
-===========================
+================================
+STGAdm - Storage Disk Admin Tool
+================================
+
+.. image:: https://travis-ci.org/kairoaraujo/STGAdm.svg?branch=master
+    :target: https://travis-ci.org/kairoaraujo/STGAdm
+
+:STGAdm:      Storage Disk Admin Tool
+:Copyright:   Copyright (c) 2016  Kairo Araujo <kairo@kairo.eti.br>
+:License:     BSD
+:Development: https://github.com/kairoaraujo/STGAdm
+
+.. contents::
+    :local:
+    :depth: 2
+    :backlinks: none
 
 This is a util to use for Storage Disk Administration.
 
-Support IBM DS8000 (DS8K) and EMC VMAX. (check Version for more informations)
-
++--------+----------+
+| Vendor | Models   |
++========+==========+
+|        |  - VMAX  |
++ EMC    +  - VNX   |
+|        |          |
++--------+----------+
+| IBM    |  - DS8K  |
++--------+----------+
 
 Version
 -------
@@ -15,19 +36,27 @@ https://github.com/kairoaraujo/STGAdm/releases
 Installation / Configuration / Using
 ------------------------------------
 
-- Requirement
-
-    $ pip install PyStorage
-
 - Download latest version of STGAdm
 
     https://github.com/kairoaraujo/STGAdm/releases
  
-Uncompress the util
+- Uncompress the util
+
+    $ unzip STGAdm-X.Y.Z.zip
+
+    or
+
+    $ tar xvzf STGADm-X.Y.Z.tar.gz
+
+- Go to STGAdm dir and install the requirements
+
+    $ cd STGAdm
+
+    $ pip install -r requirements.txt
 
 - Configure the STGAdm
 
-    STGAdm/stgadm/config.py
+    $ vi STGAdm/stgadm/config.py
 
 - Execute the STGAdm
 

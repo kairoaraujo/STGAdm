@@ -1,4 +1,5 @@
 *.pyc
 *.idea
+STGAdm.egg-info
 stgadm/data_tests/*
 *.tox

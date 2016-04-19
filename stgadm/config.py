@@ -4,7 +4,7 @@
 #
 
 # STGAdm installation directory
-#stghome = "/opt/Atividades/kairo/stgadm"
+stghome = "/opt/STGAdm"
 
 
 # Storage List
