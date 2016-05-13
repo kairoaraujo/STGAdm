@@ -203,7 +203,7 @@ class New(object):
             for l_id in self.lss_2_id_list:
                 exec_return = self.ds8k.mkfbvol(self.pool_2_option,
                                                 self.lun_size,
-                                                self.lun_sid,
+                                                '{0}_LUN'.format(self.lun_sid),
                                                 self.vol_group, l_id)
 
                 _write_evidence(exec_return, evidence_file_name)
