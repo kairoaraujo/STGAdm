@@ -1,2 +1,2 @@
-PyStorage>=0.5.0
+PyStorage>=0.5.1
 importlib>=1.0.3
