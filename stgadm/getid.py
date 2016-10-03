@@ -124,7 +124,6 @@ class VNX(object):
         used_lu = vnx.get_luns(self.stg_pool)
 
         if used_lu[0] != 0:
-            print(used_lu[1])
             exit()
         else:
             used_lu = used_lu[1]

@@ -269,8 +269,6 @@ def menu_emc_vnx(change=None, hostname_client=None, storage_name=None,
 
         else:
             pool = pools[1][0]
-            print('Using the only existent pool: '
-                  '\033[1;32m{0}\033[1;00m\n'.format(pool))
 
     hostname_client_storage, stggroup_name = _get_stg_host_info('', wwn_client)
 
